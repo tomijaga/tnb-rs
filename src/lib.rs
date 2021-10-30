@@ -1,92 +1,114 @@
-mod account;
-mod hd_wallet;
+//!
+//! This crate is an SDk for [thenewboston](https://thenewboston.com/) cryptocurrency network and
+//! it supports account generation, signing and signature verification
+//!
+//!
+//! # Account
+//! Accounts are annonymous identites with a private_key and a public_key called an account_number where coins can be sent to and from.
+//! The person who has access to an accounts private key has total control over the accounts coins so ensure you store your private key safely
+//!
+//! ## Create a Random Account
+//!
+//! ```
+//! use tnb_rs::account::Account;
+//!
+//! let acc = Account::new()
+//! ```
+//!
+//! ## Create an account from an existing private_key
+//!
+//! ```
+//!    let priv_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467"
+//!    let acc = Account::from_private_key(priv_key);
+//!
+//!     assert_eq!(priv_key, acc.private_key_hex());
+//! ```
+//!
+//! ## Signature
+//!
+//! - Creating a signature from a message
+//!
+//! ```
+//!     use tnb_rs::account::Account;
+//!     let priv_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467"
+//!     let acc = Account::from_private_key(priv_key);
+//!
+//!     let message = "Hidden Message";
+//!
+//!     let sig = acc.create_signature(message);
+//!
+//!     println!("signature: {}", sig);
+//!     
+//! ```
+//!
+//! - Validating a signature
+//!
+//!    The result will only be true if it is validated with the original message and the signer's account_number
+//!
+//! ```
+//!     let result = Account::validate_signature(&sig, message, acc.account_number);
+//!
+//!     println!("result: {}", result);
+//!
+//!     
+//! ```
+//!
+//! # HDWallet
+//! - For the power users who may want to utilize a lot of accounts
+//! - A mnemonic phrase that is easier to remember than a 32 byte hex number
+//! - Useful for staying hidden on a public and decentralized network such as thenewboston
+//!
+//! ## Create a HDWallet
+//!  - Creating a random wallet
+//!     
+//!     
+//!     ```
+//!         let hd = HDWallet::new();
+//!         
+//!         // remember to save the mnemonic phrase before proceeding
+//!         // if you plan on using this hd wallet again
+//!         println!("mnemonic phrase: {}", hd.mnemonic);
+//!     ```
+//!     
+//!  - Creating a hd wallet from a mnemonic phrase
+//!
+//!     ```
+//!         let m = "visa nephew like this amazing soldier negative front elevator warfare teach good";
+//!
+//!         let hd = HDWallet::from_mnemonic_phrase(m);
+//!
+//!     ```
+//!
+//! ## Generating accounts
+//!
+//! - This wallet uses the slip10 and bip44 standards for Account key derivation
 
-#[cfg(test)]
-mod tests {
-    use crate::account::*;
+//!     ```
+//!         
+//!         let m = "visa nephew like this amazing soldier negative front elevator warfare teach good";
+//!
+//!         let hd = HDWallet::from_mnemonic_phrase(m);
+//!         
+//!         // simple method to get the first account in the hd waller tree
+//!         // Useful for people who want to use the hd wallet to memorizing an account
+//!         let first_account = hd.first_account();
+//!         
+//!
+//!     ```
+//!     
+//! - Generating a specific accounts from the hd wallet tree
+//! - This is done by calling the `get_account` method with an account and address index
+//!
+//!     ```
+//!         let acc =  hd.get_account(123, 78);
+//!
+//!     ```
+//!     
+//!     
+//!
+//!
+pub mod account;
+pub mod hd_wallet;
 
-    const PRIVATE_KEY_HEX: &str =
-        "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467";
-    const ACCOUNT_NUMBER_HEX: &str =
-        "e6ba479bc9098608d4bb756ff80093ffa1c2200c3c282b90e9d2f5e1f7adab41";
-    #[test]
-    fn generates_random_account() {
-        let acc = Account::new();
-        assert_eq!(acc.account_number_hex().len(), 64);
-        assert_eq!(acc.private_key_hex().len(), 64);
-    }
-    #[test]
-    fn generates_account_from_private_key() {
-        let acc = Account::from_private_key(PRIVATE_KEY_HEX);
-        assert_eq!(acc.account_number_hex(), ACCOUNT_NUMBER_HEX);
-        assert_eq!(acc.private_key_hex(), PRIVATE_KEY_HEX);
-    }
-    #[test]
-    fn is_valid_keypair() {
-        assert_eq!(
-            Account::is_valid_keypair(PRIVATE_KEY_HEX, ACCOUNT_NUMBER_HEX),
-            true
-        );
-        assert_eq!(
-            Account::is_valid_keypair(ACCOUNT_NUMBER_HEX, PRIVATE_KEY_HEX),
-            false
-        );
-    }
-    #[test]
-    fn create_and_verify_signature() {
-        let acc = Account::new();
-        let message = "testing create signature";
-        let sig = acc.create_signature(message);
-        assert_eq!(sig.len(), 128);
-        let result = Account::verify_signature(&sig, message, &acc.account_number_hex());
-        assert_eq!(result, true);
-        // Testing with wrong message
-        assert_eq!(
-            Account::verify_signature(&sig, "testing create", &acc.account_number_hex()),
-            false
-        );
-        // Testing with wrong Account number
-        assert_eq!(
-            Account::verify_signature(&sig, "testing create", &Account::new().account_number_hex()),
-            false
-        );
-    }
-
-    #[test]
-    fn test_serialize_block() {
-        let block_data: BlockData = BlockData::CoinTransfer {
-            balance_key: "72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6"
-                .to_string(),
-            txs: vec![
-                Transaction {
-                    amount: 1,
-                    recipient: "06e51367ffdb5e3e3c31118596e0956a48b1ffde327974d39ce1c3d3685e30ab"
-                        .to_string(),
-                    fee: None,
-                    memo: Some("AEz".to_string()),
-                },
-                Transaction {
-                    amount: 1,
-                    recipient: "29865762fae7d26e51f6465b3fea436d513478cfb8aa068e88a927e887cdc5fc"
-                        .to_string(),
-                    fee: Some(Node::BANK),
-                    memo: None,
-                },
-                Transaction {
-                    amount: 1,
-                    recipient: "ec8f6734272e8d9d5ea995479dd6d173424be38b313a3069d5fa62e7038a08e9"
-                        .to_string(),
-                    fee: Some(Node::PRIMARY_VALIDATOR),
-                    memo: None,
-                },
-            ],
-        };
-        let block_message = BlockMessage{
-            account_number: "72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6".to_string(),
-            message: block_data,
-            signature: "ee5a2f2a2f5261c1b633e08dd61182fd0db5604c853ebd8498f6f28ce8e2ccbbc38093918610ea88a7ad47c7f3192ed955d9d1529e7e390013e43f25a5915c0f".to_string(),
-        };
-        let test_block = "{\"account_number\":\"72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6\",\"message\":{\"balance_key\":\"72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6\",\"txs\":[{\"amount\":1,\"recipient\":\"06e51367ffdb5e3e3c31118596e0956a48b1ffde327974d39ce1c3d3685e30ab\",\"memo\":\"AEz\"},{\"amount\":1,\"recipient\":\"29865762fae7d26e51f6465b3fea436d513478cfb8aa068e88a927e887cdc5fc\",\"fee\":\"BANK\"},{\"amount\":1,\"recipient\":\"ec8f6734272e8d9d5ea995479dd6d173424be38b313a3069d5fa62e7038a08e9\",\"fee\":\"PRIMARY_VALIDATOR\"}]},\"signature\":\"ee5a2f2a2f5261c1b633e08dd61182fd0db5604c853ebd8498f6f28ce8e2ccbbc38093918610ea88a7ad47c7f3192ed955d9d1529e7e390013e43f25a5915c0f\"}";
-        assert_eq!(serde_json::to_string(&block_message).unwrap(), test_block)
-    }
-}
+pub use account::{Account, BlockData, ChainData, Transaction};
+pub use hd_wallet::HDWallet;

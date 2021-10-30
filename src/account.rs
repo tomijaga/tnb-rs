@@ -17,9 +17,6 @@ pub fn hex_to_fixed_bytes<const N: usize>(hex_key: &str) -> [u8; N] {
 }
 
 #[derive(Debug, Deserialize, Serialize)]
-pub struct PublicKeyHex(pub String);
-
-#[derive(Debug, Deserialize, Serialize)]
 pub enum Node {
     BANK,
     #[allow(non_camel_case_types)]
@@ -66,14 +63,25 @@ pub struct SignedMessage {
     signature: String,
 }
 
+/// An Account consists of an account_number and private_key.
+///
+/// This private_key is used for signing transactions on chain to prove that you are the owner of the account
+/// and should not be shared with anyone.
 #[derive(Debug)]
 pub struct Account {
-    account_number: PublicKey,
-    private_key: SecretKey,
+    pub account_number: PublicKey,
+    pub private_key: SecretKey,
 }
 
 #[allow(dead_code)]
 impl Account {
+    /// Creates an random Account
+    ///
+    /// ```
+    /// use tnb_rs::Account;
+    /// let acc = Account::new();
+    ///
+    /// ```
     pub fn new() -> Self {
         let (pk, sk) = sign::gen_keypair();
         Account {
@@ -82,6 +90,21 @@ impl Account {
         }
     }
 
+    /// Creates an Account from a private_key
+    /// # Example
+    ///
+    /// ```
+    ///     use tnb_rs::Account;
+    ///
+    ///     fn main(){
+    ///
+    ///     let private_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467";
+    ///     let acc = Account::from_private_key(private_key);
+    ///
+    ///     assert_eq!(acc.private_key, private_key);
+    ///
+    ///     }
+    /// ```
     pub fn from_private_key(private_key_hex: &str) -> Self {
         let private_key_as_bytes: [u8; 32] = hex_to_fixed_bytes::<32>(private_key_hex);
         let priv_key_as_seed = Seed(private_key_as_bytes);
@@ -93,25 +116,30 @@ impl Account {
         }
     }
 
+    /// Returns the account number as a hex string
     pub fn account_number_hex(&self) -> String {
         hex::encode(self.account_number)
     }
 
+    /// Returns the private key as a hex string
     pub fn private_key_hex(&self) -> String {
         hex::encode(&self.private_key[0..32])
     }
 
+    /// Checks if a private key and account number are a keypair
     pub fn is_valid_keypair(_private_key_hex: &str, _account_number_hex: &str) -> bool {
         let acc = Account::from_private_key(_private_key_hex);
         _account_number_hex == acc.account_number_hex()
     }
 
+    /// Signs the given message with the Account's private key
     pub fn create_signature(&self, message: &str) -> String {
         let message_as_bytes = message.as_bytes();
         let signed_message = sign_detached(message_as_bytes, &self.private_key);
         hex::encode(signed_message)
     }
 
+    /// Verifies that the signature and message are a
     pub fn verify_signature(
         signature_as_hex: &str,
         message: &str,
@@ -127,6 +155,7 @@ impl Account {
         )
     }
 
+    /// Creates a block message to make a transaction on thenewboston network
     pub fn create_block_message(&self, data: BlockData) -> BlockMessage {
         let serialized_block = serde_json::to_string(&data);
         BlockMessage {
@@ -136,6 +165,7 @@ impl Account {
         }
     }
 
+    /// Creates a message that nodes can use to make changes on the network
     pub fn create_signed_message(&self, data: ChainData) -> SignedMessage {
         let serialized_data = serde_json::to_string(&data);
         SignedMessage {
