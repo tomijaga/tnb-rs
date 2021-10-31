@@ -1,14 +1,3 @@
 var N = null;var sourcesIndex = {};
-sourcesIndex["adler"] = {"name":"","files":["algo.rs","lib.rs"]};
-sourcesIndex["byteorder"] = {"name":"","files":["lib.rs"]};
-sourcesIndex["cfg_if"] = {"name":"","files":["lib.rs"]};
-sourcesIndex["itoa"] = {"name":"","files":["lib.rs"]};
-sourcesIndex["opaque_debug"] = {"name":"","files":["lib.rs"]};
-sourcesIndex["ppv_lite86"] = {"name":"","files":["generic.rs","lib.rs","soft.rs","types.rs"]};
-sourcesIndex["rustc_demangle"] = {"name":"","files":["legacy.rs","lib.rs","v0.rs"]};
-sourcesIndex["rustc_serialize"] = {"name":"","files":["base64.rs","collection_impls.rs","hex.rs","json.rs","lib.rs","serialize.rs"]};
-sourcesIndex["signature"] = {"name":"","files":["error.rs","lib.rs","signature.rs","signer.rs","verifier.rs"]};
-sourcesIndex["subtle"] = {"name":"","files":["lib.rs"]};
 sourcesIndex["tnb_rs"] = {"name":"","files":["account.rs","hd_wallet.rs","lib.rs"]};
-sourcesIndex["unicode_xid"] = {"name":"","files":["lib.rs","tables.rs"]};
 createSourceSidebar();

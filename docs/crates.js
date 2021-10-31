@@ -1,1 +1,1 @@
-window.ALL_CRATES = ["adler","byteorder","cfg_if","itoa","opaque_debug","ppv_lite86","rustc_demangle","rustc_serialize","signature","subtle","tnb_rs","unicode_xid"];
+window.ALL_CRATES = ["tnb_rs"];
