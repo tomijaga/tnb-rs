@@ -1,114 +1,111 @@
 //!
-//! This crate is an SDk for [thenewboston](https://thenewboston.com/) cryptocurrency network and
-//! it supports account generation, signing and signature verification
+//! This crate is a SDk for [thenewboston](https://thenewboston.com/) cryptocurrency network that
+//! supports account generation, signing and signature verification
 //!
 //!
 //! # Account
-//! Accounts are annonymous identites with a private_key and a public_key called an account_number where coins can be sent to and from.
-//! The person who has access to an accounts private key has total control over the accounts coins so ensure you store your private key safely
+//! - Accounts are anonymous identites with a signing_key and a public key called an account number where coins can be sent to and from.
+//! - The person who has access to an account's signing key has total control over the accounts coins so ensure you store your signing key safely
 //!
 //! ## Create a Random Account
 //!
 //! ```
-//! use tnb_rs::account::Account;
+//! use tnb_rs::Account;
 //!
-//! let acc = Account::new()
+//! let acc = Account::new();
 //! ```
 //!
-//! ## Create an account from an existing private_key
+//! ## Create an account from an existing signing key
 //!
 //! ```
-//!    let priv_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467"
-//!    let acc = Account::from_private_key(priv_key);
+//!    use tnb_rs::Account;
 //!
-//!     assert_eq!(priv_key, acc.private_key_hex());
+//!    let priv_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467";
+//!    let acc = Account::from_signing_key(priv_key);
+//!
+//!    assert_eq!(priv_key, acc.signing_key_hex());
 //! ```
 //!
-//! ## Signature
-//!
-//! - Creating a signature from a message
-//!
-//! ```
-//!     use tnb_rs::account::Account;
-//!     let priv_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467"
-//!     let acc = Account::from_private_key(priv_key);
-//!
-//!     let message = "Hidden Message";
-//!
-//!     let sig = acc.create_signature(message);
-//!
-//!     println!("signature: {}", sig);
-//!     
-//! ```
-//!
-//! - Validating a signature
-//!
-//!    The result will only be true if it is validated with the original message and the signer's account_number
-//!
-//! ```
-//!     let result = Account::validate_signature(&sig, message, acc.account_number);
-//!
-//!     println!("result: {}", result);
-//!
-//!     
-//! ```
 //!
 //! # HDWallet
-//! - For the power users who may want to utilize a lot of accounts
-//! - A mnemonic phrase that is easier to remember than a 32 byte hex number
+//! Reasons to use a HD Wallet:
+//! - Uses a mnemonic phrase that is easier to remember than a 32 byte hex number
+//! - Can generate a lot of child accounts up to a max of 4,611,686,014,132,420,600 using the bip44 standard
 //! - Useful for staying hidden on a public and decentralized network such as thenewboston
 //!
 //! ## Create a HDWallet
-//!  - Creating a random wallet
+//!  - Creating a random HD Wallet
+//!
+//! ```
+//!     use tnb_rs::HDWallet;
+//!
+//!     let hd = HDWallet::new();
 //!     
+//!     // store your mnemonic phrase safely
+//!     println!("mnemonic phrase: {}", hd.mnemonic);
+//!
+//! ```
+//!
+//!  - Creating a HD Wallet from a mnemonic phrase
+//! This method allows the user to set an optional password for added security on their account keys.
+//!
+//! ```
+//!     use tnb_rs::HDWallet;
+//!
+//!     let m = "visa nephew like this amazing soldier negative front elevator warfare teach good";
+//!
+//!     // with no password
+//!     let hd = HDWallet::from_mnemonic(m, None);
+//!
+//!     // with password
+//!     let hd = HDWallet::from_mnemonic(m, Some("********"));
+//!
 //!     
-//!     ```
-//!         let hd = HDWallet::new();
-//!         
-//!         // remember to save the mnemonic phrase before proceeding
-//!         // if you plan on using this hd wallet again
-//!         println!("mnemonic phrase: {}", hd.mnemonic);
-//!     ```
+//!     assert_eq!(hd.mnemonic, m);
+//!
+//! ```
+//!
+//! # Signature
+//!
+//! - Creating a signature and verifing a signature
+//!
+//! ```
+//!     use tnb_rs::{Account, HDWallet};
 //!     
-//!  - Creating a hd wallet from a mnemonic phrase
+//!     let m = "visa nephew like this amazing soldier negative front elevator warfare teach good";
+//!     let hd = HDWallet::from_mnemonic(m, None);
+//!     
+//!     // returns an Account struct
+//!     let acc: Account =  hd.get_first_account();
 //!
-//!     ```
-//!         let m = "visa nephew like this amazing soldier negative front elevator warfare teach good";
+//!     let message = "Hidden Message";
+//!     let sig = acc.create_signature(message);
 //!
-//!         let hd = HDWallet::from_mnemonic_phrase(m);
+//!     assert_eq!(sig.len(), 128);
+//!     println!("signature: {}", sig);
 //!
-//!     ```
 //!
-//! ## Generating accounts
+//!     // Verify Signature
+//!     let result = Account::verify_signature(&sig, message, &acc.account_number_hex());
+//!     
+//!     // The result will only be true if it is validated with the original message and the signer's account_number
+//!     assert_eq!(result, true);
+//!     
+//! ```
 //!
-//! - This wallet uses the slip10 and bip44 standards for Account key derivation
 
-//!     ```
-//!         
-//!         let m = "visa nephew like this amazing soldier negative front elevator warfare teach good";
-//!
-//!         let hd = HDWallet::from_mnemonic_phrase(m);
-//!         
-//!         // simple method to get the first account in the hd waller tree
-//!         // Useful for people who want to use the hd wallet to memorizing an account
-//!         let first_account = hd.first_account();
-//!         
-//!
-//!     ```
-//!     
-//! - Generating a specific accounts from the hd wallet tree
-//! - This is done by calling the `get_account` method with an account and address index
-//!
-//!     ```
-//!         let acc =  hd.get_account(123, 78);
-//!
-//!     ```
-//!     
-//!     
-//!
-//!
-pub mod account;
-pub mod hd_wallet;
+#![warn(future_incompatible)]
+#![deny(missing_docs)] // refuse to compile if documentation is missing
+#![cfg_attr(not(test), forbid(unsafe_code))]
 
-pub use account::{Account, BlockData, ChainData, Transaction};
-pub use hd_wallet::HDWallet;
+#[cfg(any(feature = "std", test))]
+#[macro_use]
+extern crate std;
+
+mod account;
+mod hd_wallet;
+
+pub use crate::account::{
+    Account, BlockData, BlockMessage, ChainData, Node, SignedMessage, Transaction,
+};
+pub use crate::hd_wallet::{HDWallet, MAX_CHILD_INDEX};
