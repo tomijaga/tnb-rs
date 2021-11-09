@@ -228,22 +228,63 @@
 <span id="228">228</span>
 <span id="229">229</span>
 <span id="230">230</span>
+<span id="231">231</span>
+<span id="232">232</span>
+<span id="233">233</span>
+<span id="234">234</span>
+<span id="235">235</span>
+<span id="236">236</span>
+<span id="237">237</span>
+<span id="238">238</span>
+<span id="239">239</span>
+<span id="240">240</span>
+<span id="241">241</span>
+<span id="242">242</span>
+<span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::account</span>::<span class="kw-2">*</span>;
 
+<span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">ensure</span>, <span class="prelude-ty">Result</span>};
 <span class="kw">use</span> <span class="ident">bip39</span>::{<span class="ident">Language</span>, <span class="ident">Mnemonic</span>};
 <span class="kw">use</span> <span class="ident">ed25519_dalek_bip32</span>::{<span class="ident">DerivationPath</span>, <span class="ident">ExtendedSecretKey</span>};
 <span class="kw">use</span> <span class="ident">hex</span>;
 <span class="kw">use</span> <span class="ident">rand</span>;
+<span class="kw">use</span> <span class="ident">std::fmt</span>;
 
 <span class="doccomment">/// The max number for the account_index and address_index</span>
 <span class="kw">pub</span> <span class="kw">const</span> <span class="ident">MAX_CHILD_INDEX</span>: <span class="ident">u32</span> <span class="op">=</span> <span class="number">2_147_483_647</span>;
 
-<span class="doccomment">/// A Hierarchical Deterministic Wallet that can create an infinite number of Accounts from a single mnemonic phrase.</span>
+<span class="doccomment">/// A Hierarchical Deterministic Wallet (HD Wallet) is a wallet that generates child keys (Accounts) from a mnemonic phrase and stores them in a tree like structure.</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// To specify the location of accounts in the tree we use something called path a path</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// This wallet uses the bip44 standard for compatibility with other existing wallets</span>
-<span class="doccomment">/// Therefor all paths are formatted like this path format:  </span>
+<span class="doccomment">/// Therefore, all paths are formatted like this:  </span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// ```text</span>
 <span class="doccomment">/// m / 44&#39; / coin_type&#39; / account_index&#39; / 0&#39; / address_index&#39;</span>
@@ -251,21 +292,28 @@
 <span class="doccomment">///</span>
 <span class="doccomment">/// The coin_type is specific to the cryptocurrency network and thenewboston&#39;s is `2002`</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// so the paths are</span>
+<span class="doccomment">/// so the path is</span>
 <span class="doccomment">/// ```text</span>
 <span class="doccomment">///     m / 44&#39; / 2002&#39; / account_index&#39; / 0&#39; / address_index&#39;</span>
 <span class="doccomment">/// ```</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// The `account_index` and `address_index` can be changed by the user as they please to get their desired account</span>
+<span class="doccomment">/// The `account_index` and `address_index` can be changed by the user to get their desired account</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// With this format a user can still get up to ```4,611,686,014,132,420,600``` accounts from a single mnemonic phrase</span>
+<span class="doccomment">/// With this format a user can get up to ```4,611,686,014,132,420,600``` accounts from a single mnemonic phrase</span>
 
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">HDWallet</span> {
     <span class="doccomment">/// mnemonic phrase</span>
-    <span class="kw">pub</span> <span class="ident">mnemonic</span>: <span class="ident">String</span>,
+    <span class="ident">mnemonic</span>: <span class="ident">String</span>,
     <span class="ident">seed</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>,
     <span class="ident">master_key</span>: <span class="ident">ExtendedSecretKey</span>,
+}
+
+<span class="kw">impl</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">HDWallet</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+        <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;HD Wallet&quot;</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;mnemonic&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">mnemonic</span>())
+            .<span class="ident">finish</span>()
+    }
 }
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
@@ -275,7 +323,7 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///     use tnb_rs::HDWallet;</span>
     <span class="doccomment">///     let hd = HDWallet::new();</span>
-    <span class="doccomment">///     println!(&quot;mnemonic: {}&quot;, hd.mnemonic);</span>
+    <span class="doccomment">///     println!(&quot;mnemonic: {}&quot;, hd.mnemonic());</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///  Ensure that you save your mnemonic phrase somewhere secure so you can use it again later</span>
     <span class="doccomment">///</span>
@@ -284,7 +332,7 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand::thread_rng</span>();
         <span class="kw">let</span> <span class="ident">mnemonic</span> <span class="op">=</span> <span class="ident">Mnemonic::generate_in_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rng</span>, <span class="ident">Language::English</span>, <span class="number">12</span>).<span class="ident">unwrap</span>();
-        <span class="ident">HDWallet::from_mnemonic</span>(<span class="ident">mnemonic</span>.<span class="ident">to_string</span>().<span class="ident">as_ref</span>(), <span class="prelude-val">None</span>)
+        <span class="ident">HDWallet::from_mnemonic</span>(<span class="ident">mnemonic</span>.<span class="ident">to_string</span>().<span class="ident">as_ref</span>(), <span class="prelude-val">None</span>).<span class="ident">unwrap</span>()
     }
 
     <span class="doccomment">/// Creates a HD Wallet from a specified mnemonic phrase.</span>
@@ -299,12 +347,12 @@
     <span class="doccomment">///     use tnb_rs::HDWallet;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     let mnemonic = &quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;;</span>
-    <span class="doccomment">///     let hd1 = HDWallet::from_mnemonic(mnemonic, None);</span>
+    <span class="doccomment">///     let hd1 = HDWallet::from_mnemonic(mnemonic, None).unwrap();</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///     let hd2 = HDWallet::from_mnemonic(mnemonic, Some(&quot;password&quot;));</span>
+    <span class="doccomment">///     let hd2 = HDWallet::from_mnemonic(mnemonic, Some(&quot;password&quot;)).unwrap();</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     // same mnemonic phrase</span>
-    <span class="doccomment">///     assert_eq!(hd1.mnemonic, hd2.mnemonic);</span>
+    <span class="doccomment">///     assert_eq!(hd1.mnemonic(), hd2.mnemonic());</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     // but different seeds meaning all the accounts generated will be different too.   </span>
     <span class="doccomment">///     assert_ne!(hd1.seed_hex(), hd2.seed_hex());</span>
@@ -312,11 +360,11 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_mnemonic</span>(<span class="ident">mnemonic</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">password</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">Mnemonic::parse_normalized</span>(<span class="kw-2">&amp;</span><span class="ident">mnemonic</span>)
-            .<span class="ident">ok</span>()
-            .<span class="ident">expect</span>(<span class="string">&quot;Invalid Mnemonic&quot;</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_mnemonic</span>(<span class="ident">mnemonic</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">password</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">HDWallet</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Mnemonic::parse_normalized</span>(<span class="ident">mnemonic</span>);
+        <span class="macro">ensure!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>(), <span class="string">&quot;Invalid Mnemonic&quot;</span>);
 
+        <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();
         <span class="kw">let</span> <span class="ident">seed</span> <span class="op">=</span> <span class="ident">m</span>
             .<span class="ident">to_seed</span>(<span class="kw">match</span> <span class="ident">password</span> {
                 <span class="prelude-val">Some</span>(<span class="ident">pw</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="ident">pw</span>,
@@ -325,39 +373,46 @@
             .<span class="ident">to_vec</span>();
         <span class="kw">let</span> <span class="ident">xpriv</span> <span class="op">=</span> <span class="ident">ExtendedSecretKey::from_seed</span>(<span class="kw-2">&amp;</span><span class="ident">seed</span>).<span class="ident">unwrap</span>();
 
-        <span class="ident">HDWallet</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">HDWallet</span> {
             <span class="ident">mnemonic</span>: <span class="ident">m</span>.<span class="ident">to_string</span>(),
             <span class="ident">seed</span>: <span class="ident">seed</span>,
             <span class="ident">master_key</span>: <span class="ident">xpriv</span>,
-        }
+        })
     }
 
     <span class="doccomment">/// Creates a new HD Wallet with an optional field for a password</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new_with_password</span>(<span class="ident">password</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">rng</span> <span class="op">=</span> <span class="ident">rand::thread_rng</span>();
         <span class="kw">let</span> <span class="ident">mnemonic</span> <span class="op">=</span> <span class="ident">Mnemonic::generate_in_with</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">rng</span>, <span class="ident">Language::English</span>, <span class="number">12</span>).<span class="ident">unwrap</span>();
-        <span class="ident">HDWallet::from_mnemonic</span>(<span class="ident">mnemonic</span>.<span class="ident">to_string</span>().<span class="ident">as_ref</span>(), <span class="ident">password</span>)
+        <span class="ident">HDWallet::from_mnemonic</span>(<span class="ident">mnemonic</span>.<span class="ident">to_string</span>().<span class="ident">as_ref</span>(), <span class="ident">password</span>).<span class="ident">unwrap</span>()
     }
 
     <span class="doccomment">/// Creates a HD Wallet from a seed in hex string format</span>
     <span class="doccomment">///</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_seed</span>(<span class="ident">seed</span>: <span class="ident">String</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_seed</span>(<span class="ident">seed</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">seed_as_bytes</span> <span class="op">=</span> <span class="ident">hex::decode</span>(<span class="kw-2">&amp;</span><span class="ident">seed</span>).<span class="ident">unwrap</span>();
-        <span class="kw">let</span> <span class="ident">xpriv</span> <span class="op">=</span> <span class="ident">ExtendedSecretKey::from_seed</span>(<span class="kw-2">&amp;</span><span class="ident">seed_as_bytes</span>).<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">ExtendedSecretKey::from_seed</span>(<span class="kw-2">&amp;</span><span class="ident">seed_as_bytes</span>);
 
-        <span class="ident">HDWallet</span> {
+        <span class="macro">ensure!</span>(
+            <span class="ident">result</span>.<span class="ident">is_ok</span>(),
+            <span class="string">&quot;Invalid Seed: The seed has to be a valid hex string of length 64&quot;</span>
+        );
+
+        <span class="prelude-val">Ok</span>(<span class="ident">HDWallet</span> {
             <span class="ident">mnemonic</span>: <span class="string">&quot;&quot;</span>.<span class="ident">to_string</span>(),
             <span class="ident">seed</span>: <span class="ident">seed_as_bytes</span>,
-            <span class="ident">master_key</span>: <span class="ident">xpriv</span>,
-        }
+            <span class="ident">master_key</span>: <span class="ident">result</span>.<span class="ident">unwrap</span>(),
+        })
     }
 
-    <span class="kw">fn</span> <span class="ident">get_account_from_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Account</span> {
-        <span class="kw">let</span> <span class="ident">child_xpriv</span>: <span class="ident">ExtendedSecretKey</span> <span class="op">=</span> <span class="self">self</span>
+    <span class="doccomment">/// Retrieves the account specified by a bip44 path</span>
+    <span class="kw">fn</span> <span class="ident">get_account_from_path</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">path</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">Account</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="self">self</span>
             .<span class="ident">master_key</span>
-            .<span class="ident">derive</span>::<span class="op">&lt;</span><span class="ident">DerivationPath</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>())
-            .<span class="ident">ok</span>()
-            .<span class="ident">expect</span>(<span class="string">&quot;Invalid Derivation Path&quot;</span>);
+            .<span class="ident">derive</span>::<span class="op">&lt;</span><span class="ident">DerivationPath</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>.<span class="ident">parse</span>().<span class="ident">unwrap</span>());
+        <span class="macro">ensure!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>(), <span class="string">&quot;Invalid Derivation Path&quot;</span>);
+
+        <span class="kw">let</span> <span class="ident">child_xpriv</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();
 
         <span class="ident">Account::from_signing_key</span>(<span class="kw-2">&amp;</span><span class="ident">hex::encode</span>(<span class="ident">child_xpriv</span>.<span class="ident">secret_key</span>))
     }
@@ -369,7 +424,7 @@
     <span class="doccomment">///     use tnb_rs::{HDWallet, MAX_CHILD_INDEX};</span>
     <span class="doccomment">///     </span>
     <span class="doccomment">///     let mnemonic = &quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;;</span>
-    <span class="doccomment">///     let hd = HDWallet::from_mnemonic(mnemonic, None);</span>
+    <span class="doccomment">///     let hd = HDWallet::from_mnemonic(mnemonic, None).unwrap();</span>
     <span class="doccomment">///     </span>
     <span class="doccomment">///     let acc1 = hd.get_account(0, 0);</span>
     <span class="doccomment">///     let acc2 = hd.get_account(23, 1_000);</span>
@@ -381,11 +436,19 @@
     <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_account</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">account_index</span>: <span class="ident">u32</span>, <span class="ident">address_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Account</span> {
         <span class="kw">let</span> <span class="ident">path</span> <span class="op">=</span> <span class="macro">format!</span>(<span class="string">&quot;m/44&#39;/2002&#39;/{}&#39;/0&#39;/{}&#39;&quot;</span>, <span class="ident">account_index</span>, <span class="ident">address_index</span>);
-        <span class="self">self</span>.<span class="ident">get_account_from_path</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>)
+
+        <span class="kw">if</span> <span class="ident">account_index</span> <span class="op">&gt;</span> <span class="ident">MAX_CHILD_INDEX</span> {
+            <span class="macro">panic!</span>(<span class="string">&quot;Account Index is greater than the Max child index (2_147_483_647)&quot;</span>)
+        }
+        <span class="kw">if</span> <span class="ident">address_index</span> <span class="op">&gt;</span> <span class="ident">MAX_CHILD_INDEX</span> {
+            <span class="macro">panic!</span>(<span class="string">&quot;Address Index is greater than the Max child index (2_147_483_647)&quot;</span>)
+        }
+
+        <span class="self">self</span>.<span class="ident">get_account_from_path</span>(<span class="kw-2">&amp;</span><span class="ident">path</span>).<span class="ident">unwrap</span>()
     }
 
     <span class="doccomment">/// Retrieves an account specified by the address_index from the column where (account_index == 0)</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_account_0</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">address_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Account</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_account_from_first_col</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">address_index</span>: <span class="ident">u32</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Account</span> {
         <span class="self">self</span>.<span class="ident">get_account</span>(<span class="number">0</span>, <span class="ident">address_index</span>)
     }
 
@@ -396,7 +459,7 @@
     <span class="doccomment">///     use tnb_rs::HDWallet;</span>
     <span class="doccomment">///     </span>
     <span class="doccomment">///     let mnemonic = &quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;;</span>
-    <span class="doccomment">///     let hd = HDWallet::from_mnemonic(mnemonic, None);</span>
+    <span class="doccomment">///     let hd = HDWallet::from_mnemonic(mnemonic, None).unwrap();</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     let get_first_account = hd.get_first_account();</span>
     <span class="doccomment">///</span>
@@ -416,6 +479,21 @@
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">seed_hex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">String</span> {
         <span class="ident">hex::encode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">seed</span>)
     }
+
+    <span class="doccomment">/// Returns a reference to the mnemonic phrase`</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">mnemonic</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">str</span> {
+        <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">mnemonic</span>
+    }
+}
+
+<span class="attribute">#[<span class="ident">test</span>]</span>
+<span class="kw">fn</span> <span class="ident">test_invalid_mnemonic_returns_err</span>() {
+    <span class="kw">let</span> <span class="ident">hd</span> <span class="op">=</span> <span class="ident">HDWallet::from_mnemonic</span>(
+        <span class="string">&quot;mnemonic: this is an invalid 12 word bip 32 mnemonic phrase bacon&quot;</span>,
+        <span class="prelude-val">None</span>,
+    );
+
+    <span class="macro">assert_eq!</span>(<span class="ident">hd</span>.<span class="ident">is_err</span>(), <span class="bool-val">true</span>);
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -424,13 +502,11 @@
     <span class="comment">// https://github.com/satoshilabs/slips/blob/master/slip-0010.md#test-vector-2-for-ed25519</span>
 
     <span class="kw">let</span> <span class="ident">seed</span> <span class="op">=</span>
-        <span class="ident">String::from</span>(
-            <span class="string">&quot;fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542&quot;</span>
-        );
+            <span class="string">&quot;fffcf9f6f3f0edeae7e4e1dedbd8d5d2cfccc9c6c3c0bdbab7b4b1aeaba8a5a29f9c999693908d8a8784817e7b7875726f6c696663605d5a5754514e4b484542&quot;</span>;
 
-    <span class="kw">let</span> <span class="ident">hd</span> <span class="op">=</span> <span class="ident">HDWallet::from_seed</span>(<span class="ident">seed</span>);
+    <span class="kw">let</span> <span class="ident">hd</span> <span class="op">=</span> <span class="ident">HDWallet::from_seed</span>(<span class="ident">seed</span>).<span class="ident">unwrap</span>();
 
-    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;&quot;</span>);
+    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;&quot;</span>).<span class="ident">unwrap</span>();
     <span class="macro">assert_eq!</span>(
         <span class="ident">acc</span>.<span class="ident">account_number_hex</span>(),
         <span class="string">&quot;86fab68dcb57aa196c77c5f264f215a112c22a912c10d123b0d03c3c28ef1037&quot;</span>
@@ -439,7 +515,7 @@
         <span class="ident">acc</span>.<span class="ident">signing_key_hex</span>(),
         <span class="string">&quot;1559eb2bbec5790b0c65d8693e4d0875b1747f4970ae8b650486ed7470845635&quot;</span>
     );
-    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;/2147483647&#39;&quot;</span>);
+    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;/2147483647&#39;&quot;</span>).<span class="ident">unwrap</span>();
     <span class="macro">assert_eq!</span>(
         <span class="ident">acc</span>.<span class="ident">account_number_hex</span>(),
         <span class="string">&quot;5ba3b9ac6e90e83effcd25ac4e58a1365a9e35a3d3ae5eb07b9e4d90bcf7506d&quot;</span>
@@ -448,7 +524,9 @@
         <span class="ident">acc</span>.<span class="ident">signing_key_hex</span>(),
         <span class="string">&quot;ea4f5bfe8694d8bb74b7b59404632fd5968b774ed545e810de9c32a4fb4192f4&quot;</span>
     );
-    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;/2147483647&#39;/1&#39;/2147483646&#39;/2&#39;&quot;</span>);
+    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>
+        .<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;/2147483647&#39;/1&#39;/2147483646&#39;/2&#39;&quot;</span>)
+        .<span class="ident">unwrap</span>();
     <span class="macro">assert_eq!</span>(
         <span class="ident">acc</span>.<span class="ident">account_number_hex</span>(),
         <span class="string">&quot;47150c75db263559a70d5778bf36abbab30fb061ad69f69ece61a72b0cfa4fc0&quot;</span>

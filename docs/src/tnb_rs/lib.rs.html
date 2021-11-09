@@ -109,21 +109,27 @@
 <span id="109">109</span>
 <span id="110">110</span>
 <span id="111">111</span>
+<span id="112">112</span>
+<span id="113">113</span>
+<span id="114">114</span>
+<span id="115">115</span>
 </pre><pre class="rust"><code><span class="doccomment">//!</span>
-<span class="doccomment">//! This crate is a SDk for [thenewboston](https://thenewboston.com/) cryptocurrency network that</span>
+<span class="doccomment">//! This crate is a SDk for [thenewboston](https://thenewboston.com/) cryptocurrency network and it</span>
 <span class="doccomment">//! supports account generation, signing and signature verification</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Account</span>
-<span class="doccomment">//! - Accounts are anonymous identites with a signing_key and a public key called an account number where coins can be sent to and from.</span>
-<span class="doccomment">//! - The person who has access to an account&#39;s signing key has total control over the accounts coins so ensure you store your signing key safely</span>
+<span class="doccomment">//! - Accounts on [thenewboston](https://thenewboston.com/) are anonymous identites with a signing key and an account number where coins can be sent to and from.</span>
+<span class="doccomment">//! - The person who has access to an account&#39;s signing key has total control over the account&#39;s coins so ensure you store your signing key safely</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Create a Random Account</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```</span>
-<span class="doccomment">//! use tnb_rs::Account;</span>
+<span class="doccomment">//!     use tnb_rs::Account;</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! let acc = Account::new();</span>
+<span class="doccomment">//!     let acc = Account::new();</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     println!(&quot;account number: {}&quot;, acc.account_number_hex());</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Create an account from an existing signing key</span>
@@ -132,7 +138,7 @@
 <span class="doccomment">//!    use tnb_rs::Account;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!    let priv_key = &quot;8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467&quot;;</span>
-<span class="doccomment">//!    let acc = Account::from_signing_key(priv_key);</span>
+<span class="doccomment">//!    let acc = Account::from_signing_key(priv_key).unwrap();</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!    assert_eq!(priv_key, acc.signing_key_hex());</span>
 <span class="doccomment">//! ```</span>
@@ -141,7 +147,7 @@
 <span class="doccomment">//! # HDWallet</span>
 <span class="doccomment">//! Reasons to use a HD Wallet:</span>
 <span class="doccomment">//! - Uses a mnemonic phrase that is easier to remember than a 32 byte hex number</span>
-<span class="doccomment">//! - Can generate a lot of child accounts up to a max of 4,611,686,014,132,420,600 using the bip44 standard</span>
+<span class="doccomment">//! - Can generate a lot of child accounts up to 4,611,686,014,132,420,600 for the bip44 standard</span>
 <span class="doccomment">//! - Useful for staying hidden on a public and decentralized network such as thenewboston</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Create a HDWallet</span>
@@ -153,12 +159,12 @@
 <span class="doccomment">//!     let hd = HDWallet::new();</span>
 <span class="doccomment">//!     </span>
 <span class="doccomment">//!     // store your mnemonic phrase safely</span>
-<span class="doccomment">//!     println!(&quot;mnemonic phrase: {}&quot;, hd.mnemonic);</span>
+<span class="doccomment">//!     println!(&quot;mnemonic phrase: {}&quot;, hd.mnemonic());</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!  - Creating a HD Wallet from a mnemonic phrase</span>
-<span class="doccomment">//! This method allows the user to set an optional password for added security on their account keys.</span>
+<span class="doccomment">//! &gt; This method allows the user to set an optional password for added security on their account keys.</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!     use tnb_rs::HDWallet;</span>
@@ -166,30 +172,32 @@
 <span class="doccomment">//!     let m = &quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;;</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     // with no password</span>
-<span class="doccomment">//!     let hd = HDWallet::from_mnemonic(m, None);</span>
+<span class="doccomment">//!     let hd = HDWallet::from_mnemonic(m, None).unwrap();</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     // with password</span>
-<span class="doccomment">//!     let hd = HDWallet::from_mnemonic(m, Some(&quot;********&quot;));</span>
+<span class="doccomment">//!     let hd = HDWallet::from_mnemonic(m, Some(&quot;********&quot;)).unwrap();</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     </span>
-<span class="doccomment">//!     assert_eq!(hd.mnemonic, m);</span>
+<span class="doccomment">//!     assert_eq!(hd.mnemonic(), m);</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! # Signature</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//! - Creating a signature and verifing a signature</span>
+<span class="doccomment">//! - Creating and verifing a signature</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!     use tnb_rs::{Account, HDWallet};</span>
 <span class="doccomment">//!     </span>
 <span class="doccomment">//!     let m = &quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;;</span>
-<span class="doccomment">//!     let hd = HDWallet::from_mnemonic(m, None);</span>
+<span class="doccomment">//!     let hd = HDWallet::from_mnemonic(m, None).unwrap();</span>
 <span class="doccomment">//!     </span>
 <span class="doccomment">//!     // returns an Account struct</span>
 <span class="doccomment">//!     let acc: Account =  hd.get_first_account();</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let message = &quot;Hidden Message&quot;;</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     // Create Signature</span>
 <span class="doccomment">//!     let sig = acc.create_signature(message);</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     assert_eq!(sig.len(), 128);</span>
@@ -217,7 +225,7 @@
 <span class="kw">mod</span> <span class="ident">hd_wallet</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::account</span>::{
-    <span class="ident">Account</span>, <span class="ident">BlockData</span>, <span class="ident">BlockMessage</span>, <span class="ident">ChainData</span>, <span class="ident">Node</span>, <span class="ident">SignedMessage</span>, <span class="ident">Transaction</span>,
+    <span class="ident">Account</span>, <span class="ident">BlockData</span>, <span class="ident">BlockMessage</span>, <span class="ident">ChainData</span>, <span class="ident">NodeType</span>, <span class="ident">SignedMessage</span>, <span class="ident">Transaction</span>,
 };
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::hd_wallet</span>::{<span class="ident">HDWallet</span>, <span class="ident">MAX_CHILD_INDEX</span>};
 </code></pre></div>

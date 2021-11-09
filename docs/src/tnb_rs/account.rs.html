@@ -248,17 +248,48 @@
 <span id="248">248</span>
 <span id="249">249</span>
 <span id="250">250</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">hex</span>;
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">ensure</span>, <span class="prelude-ty">Result</span>};
+<span class="kw">use</span> <span class="ident">hex</span>;
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
 <span class="kw">use</span> <span class="ident">sodiumoxide::crypto::sign</span>;
 <span class="kw">use</span> <span class="ident">sodiumoxide::crypto::sign::ed25519</span>::{
     <span class="ident">sign_detached</span>, <span class="ident">verify_detached</span>, <span class="ident">PublicKey</span>, <span class="ident">SecretKey</span>, <span class="ident">Seed</span>, <span class="ident">Signature</span>,
 };
-<span class="kw">use</span> <span class="ident">std::convert::TryInto</span>;
+<span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">convert::TryInto</span>, <span class="ident">fmt</span>};
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">convert_vec_to_fixed_array</span><span class="op">&lt;</span><span class="ident">T</span>, <span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span><span class="op">&gt;</span>(<span class="ident">vec</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">T</span>; <span class="ident">N</span>] {
-    <span class="ident">vec</span>.<span class="ident">try_into</span>()
-        .<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">v</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">|</span> <span class="macro">panic!</span>(<span class="string">&quot;Expected a Vec of length {} but it was {}&quot;</span>, <span class="ident">N</span>, <span class="ident">v</span>.<span class="ident">len</span>()))
+    <span class="ident">vec</span>.<span class="ident">try_into</span>().<span class="ident">unwrap_or_else</span>(<span class="op">|</span><span class="ident">v</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span><span class="op">|</span> {
+        <span class="macro">panic!</span>(
+            <span class="string">&quot;Expected a hex of length {} but it was {}&quot;</span>,
+            <span class="ident">N</span> <span class="op">/</span> <span class="number">2</span>,
+            <span class="ident">v</span>.<span class="ident">len</span>() <span class="op">/</span> <span class="number">2</span>
+        )
+    })
 }
 
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">hex_to_fixed_bytes</span><span class="op">&lt;</span><span class="kw">const</span> <span class="ident">N</span>: <span class="ident">usize</span><span class="op">&gt;</span>(<span class="ident">hex_key</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> [<span class="ident">u8</span>; <span class="ident">N</span>] {
@@ -267,8 +298,8 @@
 }
 
 <span class="doccomment">/// Enum that specifies a Node&#39;s type</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
-<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">Node</span> {
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Clone</span>)]</span>
+<span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">NodeType</span> {
     <span class="doccomment">/// Bank Node</span>
     <span class="ident">BANK</span>,
     <span class="doccomment">/// Primary Validator Node</span>
@@ -277,7 +308,7 @@
 }
 
 <span class="doccomment">/// Transaction Data</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Transaction</span> {
     <span class="doccomment">/// amount of coins to send</span>
     <span class="kw">pub</span> <span class="ident">amount</span>: <span class="ident">u64</span>,
@@ -287,7 +318,7 @@
 
     <span class="doccomment">/// The fee paid to the node processing the transaction</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
-    <span class="kw">pub</span> <span class="ident">fee</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">Node</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">fee</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">NodeType</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// optional message to add to the transaction</span>
     <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">skip_serializing_if</span> <span class="op">=</span> <span class="string">&quot;Option::is_none&quot;</span>)]</span>
@@ -295,7 +326,7 @@
 }
 
 <span class="doccomment">/// Contains the structure of supported block types</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="attribute">#[<span class="ident">serde</span>(<span class="ident">untagged</span>)]</span>
 <span class="kw">pub</span> <span class="kw">enum</span> <span class="ident">BlockData</span> {
     <span class="doccomment">/// The Coin Transfer Block Type</span>
@@ -309,7 +340,7 @@
 }
 
 <span class="doccomment">/// Block structure to make a block request on the network</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Clone</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BlockMessage</span> {
     <span class="doccomment">/// sender&#39;s account number</span>
     <span class="kw">pub</span> <span class="ident">account_number</span>: <span class="ident">String</span>,
@@ -345,18 +376,26 @@
     <span class="kw">pub</span> <span class="ident">signature</span>: <span class="ident">String</span>,
 }
 
-<span class="doccomment">/// An Account consists of an account_number and signing_key.</span>
+<span class="doccomment">/// An Account consists of an account number and a signing key.</span>
 <span class="doccomment">///</span>
-<span class="doccomment">/// The account number is used to identify an account on thenewboston network</span>
-<span class="doccomment">/// The signing_key is used to prove that you are the owner of the account by creating signatures and validating them with your account number</span>
+<span class="doccomment">/// - The account number is used to identify an account on thenewboston network</span>
+<span class="doccomment">/// - The signing key is used to prove that you are the owner of the account by creating signatures and validating them with your account number.</span>
 <span class="doccomment">/// For this reason, your signing key should not be shared with anyone.</span>
 <span class="doccomment">///</span>
-<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
+<span class="attribute">#[<span class="ident">derive</span>(<span class="ident">PartialEq</span>, <span class="ident">Eq</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Account</span> {
     <span class="ident">account_number</span>: <span class="ident">PublicKey</span>,
     <span class="ident">signing_key</span>: <span class="ident">SecretKey</span>,
 }
 
+<span class="kw">impl</span> <span class="ident">fmt::Debug</span> <span class="kw">for</span> <span class="ident">Account</span> {
+    <span class="kw">fn</span> <span class="ident">fmt</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">f</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">fmt::Formatter</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">fmt::Result</span> {
+        <span class="ident">f</span>.<span class="ident">debug_struct</span>(<span class="string">&quot;Account&quot;</span>)
+            .<span class="ident">field</span>(<span class="string">&quot;Account Number&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">account_number_hex</span>())
+            .<span class="ident">field</span>(<span class="string">&quot;Signing Key&quot;</span>, <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">signing_key_hex</span>())
+            .<span class="ident">finish</span>()
+    }
+}
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="kw">impl</span> <span class="ident">Account</span> {
     <span class="doccomment">/// Creates an random Account</span>
@@ -385,20 +424,31 @@
     <span class="doccomment">///     use tnb_rs::Account;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     let signing_key = &quot;8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467&quot;;</span>
-    <span class="doccomment">///     let acc = Account::from_signing_key(signing_key);</span>
+    <span class="doccomment">///     let acc = Account::from_signing_key(signing_key).unwrap();</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     assert_eq!(acc.signing_key_hex(), signing_key);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_signing_key</span>(<span class="ident">signing_key_hex</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="kw">let</span> <span class="ident">signing_key_as_bytes</span>: [<span class="ident">u8</span>; <span class="number">32</span>] <span class="op">=</span> <span class="ident">hex_to_fixed_bytes</span>::<span class="op">&lt;</span><span class="number">32</span><span class="op">&gt;</span>(<span class="ident">signing_key_hex</span>);
-        <span class="kw">let</span> <span class="ident">priv_key_as_seed</span> <span class="op">=</span> <span class="ident">Seed</span>(<span class="ident">signing_key_as_bytes</span>);
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_signing_key</span>(<span class="ident">signing_key_hex</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">hex::decode</span>(<span class="ident">signing_key_hex</span>);
+        <span class="macro">ensure!</span>(<span class="ident">result</span>.<span class="ident">is_ok</span>(), <span class="ident">result</span>.<span class="ident">err</span>().<span class="ident">unwrap</span>());
+
+        <span class="kw">let</span> <span class="ident">signing_key_as_bytes</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Seed::from_slice</span>(<span class="kw-2">&amp;</span><span class="ident">signing_key_as_bytes</span>);
+        <span class="macro">ensure!</span>(
+            <span class="ident">result</span>.<span class="ident">is_some</span>(),
+            <span class="macro">format!</span>(
+                <span class="string">&quot;Signing Key hex needs to be of length 64 but only found {}&quot;</span>,
+                <span class="ident">signing_key_as_bytes</span>.<span class="ident">len</span>() <span class="op">*</span> <span class="number">2</span>
+            )
+        );
+        <span class="kw">let</span> <span class="ident">priv_key_as_seed</span> <span class="op">=</span> <span class="ident">result</span>.<span class="ident">unwrap</span>();
         <span class="kw">let</span> (<span class="ident">pk</span>, <span class="ident">sk</span>) <span class="op">=</span> <span class="ident">sign::keypair_from_seed</span>(<span class="kw-2">&amp;</span><span class="ident">priv_key_as_seed</span>);
 
-        <span class="ident">Account</span> {
+        <span class="prelude-val">Ok</span>(<span class="ident">Account</span> {
             <span class="ident">account_number</span>: <span class="ident">pk</span>,
             <span class="ident">signing_key</span>: <span class="ident">sk</span>,
-        }
+        })
     }
 
     <span class="doccomment">/// Returns the account number as a hex string</span>
@@ -411,9 +461,9 @@
         <span class="ident">hex::encode</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">signing_key</span>[<span class="number">0</span>..<span class="number">32</span>])
     }
 
-    <span class="doccomment">/// Returns a tuple of signing key and account number</span>
+    <span class="doccomment">/// Returns a tuple of the account number and signing key</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">keypair_as_hex</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> (<span class="ident">String</span>, <span class="ident">String</span>) {
-        (<span class="self">self</span>.<span class="ident">signing_key_hex</span>(), <span class="self">self</span>.<span class="ident">account_number_hex</span>())
+        (<span class="self">self</span>.<span class="ident">account_number_hex</span>(), <span class="self">self</span>.<span class="ident">signing_key_hex</span>())
     }
 
     <span class="doccomment">/// Checks if a signing key and account number are keypairs</span>
@@ -424,8 +474,8 @@
     <span class="doccomment">///     use tnb_rs::Account;</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     let signing_key = &quot;8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467&quot;;</span>
-    <span class="doccomment">///     let acc = Account::from_signing_key(signing_key);</span>
-    <span class="doccomment">///     let (sk, acc_num) = acc.keypair_as_hex();</span>
+    <span class="doccomment">///     let acc = Account::from_signing_key(signing_key).unwrap();</span>
+    <span class="doccomment">///     let (acc_num, sk ) = acc.keypair_as_hex();</span>
     <span class="doccomment">///     </span>
     <span class="doccomment">///     assert_eq!(signing_key, &amp;sk);</span>
     <span class="doccomment">///</span>
@@ -435,8 +485,9 @@
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">is_valid_keypair</span>(<span class="ident">_signing_key_hex</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="ident">_account_number_hex</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">Account::from_signing_key</span>(<span class="ident">_signing_key_hex</span>);
-        <span class="ident">_account_number_hex</span> <span class="op">=</span><span class="op">=</span> <span class="ident">acc</span>.<span class="ident">account_number_hex</span>()
+        <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">Account::from_signing_key</span>(<span class="ident">_signing_key_hex</span>).<span class="ident">unwrap</span>();
+
+        <span class="ident">acc</span>.<span class="ident">account_number_hex</span>().<span class="ident">eq</span>(<span class="ident">_account_number_hex</span>)
     }
 
     <span class="doccomment">/// Signs the given message with the Account&#39;s signing key</span>
@@ -461,7 +512,6 @@
     <span class="doccomment">/// # Returns</span>
     <span class="doccomment">/// A `signature` in form of a hex string</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///</span>
 
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">verify_signature</span>(
         <span class="ident">signature_as_hex</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>,
@@ -484,7 +534,7 @@
         <span class="ident">BlockMessage</span> {
             <span class="ident">account_number</span>: <span class="self">self</span>.<span class="ident">account_number_hex</span>(),
             <span class="ident">message</span>: <span class="ident">data</span>,
-            <span class="ident">signature</span>: <span class="self">self</span>.<span class="ident">create_signature</span>(<span class="ident">serialized_block</span>.<span class="ident">unwrap</span>().<span class="ident">as_ref</span>()),
+            <span class="ident">signature</span>: <span class="self">self</span>.<span class="ident">create_signature</span>(<span class="kw-2">&amp;</span><span class="ident">serialized_block</span>.<span class="ident">unwrap</span>()),
         }
     }
 
@@ -494,7 +544,7 @@
         <span class="ident">SignedMessage</span> {
             <span class="ident">message</span>: <span class="ident">data</span>,
             <span class="ident">node_identifier</span>: <span class="self">self</span>.<span class="ident">account_number_hex</span>(),
-            <span class="ident">signature</span>: <span class="self">self</span>.<span class="ident">create_signature</span>(<span class="ident">serialized_data</span>.<span class="ident">unwrap</span>().<span class="ident">as_ref</span>()),
+            <span class="ident">signature</span>: <span class="self">self</span>.<span class="ident">create_signature</span>(<span class="kw-2">&amp;</span><span class="ident">serialized_data</span>.<span class="ident">unwrap</span>()),
         }
     }
 }
