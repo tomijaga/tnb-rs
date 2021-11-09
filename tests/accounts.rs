@@ -6,8 +6,8 @@ const ACCOUNT_NUMBER_HEX: &str = "e6ba479bc9098608d4bb756ff80093ffa1c2200c3c282b
 #[test]
 fn generates_random_account() {
     let acc = Account::new();
-    assert_eq!(acc.account_number_hex().len(), 64);
-    assert_eq!(acc.signing_key_hex().len(), 64);
+    assert_eq!(acc.account_number().len(), 64);
+    assert_eq!(acc.signing_key().len(), 64);
 }
 #[test]
 fn generate_account_from_invalid_signing_key() {
@@ -21,11 +21,11 @@ fn generate_account_from_valid_signing_key() {
     assert_eq!(acc.is_ok(), true);
 
     let acc = acc.unwrap();
-    assert_eq!(acc.account_number_hex().len(), 64);
-    assert_eq!(acc.signing_key_hex().len(), 64);
+    assert_eq!(acc.account_number().len(), 64);
+    assert_eq!(acc.signing_key().len(), 64);
 
-    assert_eq!(acc.account_number_hex(), ACCOUNT_NUMBER_HEX);
-    assert_eq!(acc.signing_key_hex(), SIGNING_KEY_HEX);
+    assert_eq!(acc.account_number(), ACCOUNT_NUMBER_HEX);
+    assert_eq!(acc.signing_key(), SIGNING_KEY_HEX);
 }
 
 #[test]
@@ -55,7 +55,7 @@ fn create_and_verify_signature() {
     );
     // Testing with wrong Account number
     assert_eq!(
-        Account::verify_signature(&sig, "testing create", &Account::new().account_number_hex()),
+        Account::verify_signature(&sig, "testing create", &Account::new().account_number()),
         false
     );
 }
@@ -102,20 +102,20 @@ fn create_block_message() {
 
     let tx = Transaction {
         amount: 1000,
-        recipient: acc.account_number_hex(),
+        recipient: acc.account_number(),
         fee: None,
         memo: None,
     };
 
     let data = BlockData::CoinTransfer {
-        balance_key: Account::new().account_number_hex().to_string(),
+        balance_key: Account::new().account_number().to_string(),
         txs: vec![&tx],
     };
 
     let block = acc.create_block_message(&data);
     let serialized_data = serde_json::to_string(&data).unwrap();
     assert_eq!(
-        Account::verify_signature(&block.signature, &serialized_data, acc.account_number_hex()),
+        Account::verify_signature(&block.signature, &serialized_data, acc.account_number()),
         true
     );
 }

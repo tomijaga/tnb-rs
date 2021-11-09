@@ -10,14 +10,14 @@ supports account generation, signing and signature verification</p>
 
     <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">Account::new</span>();
 
-    <span class="macro">println!</span>(<span class="string">&quot;account number: {}&quot;</span>, <span class="ident">acc</span>.<span class="ident">account_number_hex</span>());</code></pre></div>
+    <span class="macro">println!</span>(<span class="string">&quot;account number: {}&quot;</span>, <span class="ident">acc</span>.<span class="ident">account_number</span>());</code></pre></div>
 <h2 id="create-an-account-from-an-existing-signing-key" class="section-header"><a href="#create-an-account-from-an-existing-signing-key">Create an account from an existing signing key</a></h2>
 <div class="example-wrap"><pre class="rust rust-example-rendered"><code>   <span class="kw">use</span> <span class="ident">tnb_rs::Account</span>;
 
    <span class="kw">let</span> <span class="ident">priv_key</span> <span class="op">=</span> <span class="string">&quot;8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467&quot;</span>;
    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">Account::from_signing_key</span>(<span class="ident">priv_key</span>).<span class="ident">unwrap</span>();
 
-   <span class="macro">assert_eq!</span>(<span class="ident">priv_key</span>, <span class="ident">acc</span>.<span class="ident">signing_key_hex</span>());</code></pre></div>
+   <span class="macro">assert_eq!</span>(<span class="ident">priv_key</span>, <span class="ident">acc</span>.<span class="ident">signing_key</span>());</code></pre></div>
 <h1 id="hdwallet" class="section-header"><a href="#hdwallet">HDWallet</a></h1>
 <p>Reasons to use a HD Wallet:</p>
 <ul>
@@ -78,7 +78,7 @@ supports account generation, signing and signature verification</p>
 
 
     <span class="comment">// Verify Signature</span>
-    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Account::verify_signature</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>, <span class="ident">message</span>, <span class="kw-2">&amp;</span><span class="ident">acc</span>.<span class="ident">account_number_hex</span>());
+    <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">Account::verify_signature</span>(<span class="kw-2">&amp;</span><span class="ident">sig</span>, <span class="ident">message</span>, <span class="kw-2">&amp;</span><span class="ident">acc</span>.<span class="ident">account_number</span>());
      
     <span class="comment">// The result will only be true if it is validated with the original message and the signer&#39;s account_number</span>
     <span class="macro">assert_eq!</span>(<span class="ident">result</span>, <span class="bool-val">true</span>);

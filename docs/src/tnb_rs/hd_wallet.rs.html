@@ -469,10 +469,10 @@
     <span class="doccomment">///</span>
     <span class="doccomment">///     let get_first_account = hd.get_first_account();</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///     assert_eq!(get_first_account.account_number_hex(),</span>
-    <span class="doccomment">///                 hd.get_account(0, 0).account_number_hex());</span>
-    <span class="doccomment">///     assert_eq!(get_first_account.signing_key_hex(),</span>
-    <span class="doccomment">///                 hd.get_account(0, 0).signing_key_hex());</span>
+    <span class="doccomment">///     assert_eq!(get_first_account.account_number(),</span>
+    <span class="doccomment">///                 hd.get_account(0, 0).account_number());</span>
+    <span class="doccomment">///     assert_eq!(get_first_account.signing_key(),</span>
+    <span class="doccomment">///                 hd.get_account(0, 0).signing_key());</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
@@ -514,31 +514,31 @@
 
     <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;&quot;</span>).<span class="ident">unwrap</span>();
     <span class="macro">assert_eq!</span>(
-        <span class="ident">acc</span>.<span class="ident">account_number_hex</span>(),
+        <span class="ident">acc</span>.<span class="ident">account_number</span>(),
         <span class="string">&quot;86fab68dcb57aa196c77c5f264f215a112c22a912c10d123b0d03c3c28ef1037&quot;</span>
     );
     <span class="macro">assert_eq!</span>(
-        <span class="ident">acc</span>.<span class="ident">signing_key_hex</span>(),
+        <span class="ident">acc</span>.<span class="ident">signing_key</span>(),
         <span class="string">&quot;1559eb2bbec5790b0c65d8693e4d0875b1747f4970ae8b650486ed7470845635&quot;</span>
     );
     <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;/2147483647&#39;&quot;</span>).<span class="ident">unwrap</span>();
     <span class="macro">assert_eq!</span>(
-        <span class="ident">acc</span>.<span class="ident">account_number_hex</span>(),
+        <span class="ident">acc</span>.<span class="ident">account_number</span>(),
         <span class="string">&quot;5ba3b9ac6e90e83effcd25ac4e58a1365a9e35a3d3ae5eb07b9e4d90bcf7506d&quot;</span>
     );
     <span class="macro">assert_eq!</span>(
-        <span class="ident">acc</span>.<span class="ident">signing_key_hex</span>(),
+        <span class="ident">acc</span>.<span class="ident">signing_key</span>(),
         <span class="string">&quot;ea4f5bfe8694d8bb74b7b59404632fd5968b774ed545e810de9c32a4fb4192f4&quot;</span>
     );
     <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">hd</span>
         .<span class="ident">get_account_from_path</span>(<span class="string">&quot;m/0&#39;/2147483647&#39;/1&#39;/2147483646&#39;/2&#39;&quot;</span>)
         .<span class="ident">unwrap</span>();
     <span class="macro">assert_eq!</span>(
-        <span class="ident">acc</span>.<span class="ident">account_number_hex</span>(),
+        <span class="ident">acc</span>.<span class="ident">account_number</span>(),
         <span class="string">&quot;47150c75db263559a70d5778bf36abbab30fb061ad69f69ece61a72b0cfa4fc0&quot;</span>
     );
     <span class="macro">assert_eq!</span>(
-        <span class="ident">acc</span>.<span class="ident">signing_key_hex</span>(),
+        <span class="ident">acc</span>.<span class="ident">signing_key</span>(),
         <span class="string">&quot;551d333177df541ad876a60ea71f00447931c0a9da16f227c11ea080d7391b8d&quot;</span>
     );
 }

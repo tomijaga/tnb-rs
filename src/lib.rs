@@ -14,7 +14,7 @@
 //!
 //!     let acc = Account::new();
 //!
-//!     println!("account number: {}", acc.account_number_hex());
+//!     println!("account number: {}", acc.account_number());
 //! ```
 //!
 //! ## Create an account from an existing signing key
@@ -25,7 +25,7 @@
 //!    let priv_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467";
 //!    let acc = Account::from_signing_key(priv_key).unwrap();
 //!
-//!    assert_eq!(priv_key, acc.signing_key_hex());
+//!    assert_eq!(priv_key, acc.signing_key());
 //! ```
 //!
 //!
@@ -88,7 +88,7 @@
 //!
 //!
 //!     // Verify Signature
-//!     let result = Account::verify_signature(&sig, message, &acc.account_number_hex());
+//!     let result = Account::verify_signature(&sig, message, &acc.account_number());
 //!     
 //!     // The result will only be true if it is validated with the original message and the signer's account_number
 //!     assert_eq!(result, true);

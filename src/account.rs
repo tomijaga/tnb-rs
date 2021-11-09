@@ -109,8 +109,7 @@ pub struct SignedMessage<'a> {
 ///
 #[derive(PartialEq, Eq)]
 pub struct Account {
-    account_number: PublicKey,
-    signing_key: SecretKey,
+    signing_key_bytes: SecretKey,
     account_number_hex: String,
     signing_key_hex: String,
 }
@@ -118,8 +117,8 @@ pub struct Account {
 impl fmt::Debug for Account {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.debug_struct("Account")
-            .field("Account Number", &self.account_number_hex())
-            .field("Signing Key", &self.signing_key_hex())
+            .field("Account Number", &self.account_number())
+            .field("Signing Key", &self.signing_key())
             .finish()
     }
 }
@@ -130,8 +129,7 @@ impl Account {
         let signing_key_as_bytes = sk.0;
 
         Account {
-            account_number: pk,
-            signing_key: sk,
+            signing_key_bytes: sk,
             account_number_hex: hex::encode(pk),
             signing_key_hex: hex::encode(&signing_key_as_bytes[0..32]),
         }
@@ -145,7 +143,7 @@ impl Account {
     ///     let acc = Account::new();
     ///
     ///     // store you signing key safely before you proceed
-    ///     println!("siging key: {}", acc.signing_key_hex());
+    ///     println!("siging key: {}", acc.signing_key());
     ///
     /// ```
     pub fn new() -> Self {
@@ -161,7 +159,7 @@ impl Account {
     ///     let signing_key = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467";
     ///     let acc = Account::from_signing_key(signing_key).unwrap();
     ///
-    ///     assert_eq!(acc.signing_key_hex(), signing_key);
+    ///     assert_eq!(acc.signing_key(), signing_key);
     ///
     /// ```
     pub fn from_signing_key(signing_key_hex: &str) -> Result<Self> {
@@ -183,18 +181,18 @@ impl Account {
     }
 
     /// Returns the account number as a hex string
-    pub fn account_number_hex(&self) -> &str {
+    pub fn account_number(&self) -> &str {
         &self.account_number_hex
     }
 
     /// Returns the signing key as a hex string
-    pub fn signing_key_hex(&self) -> &str {
+    pub fn signing_key(&self) -> &str {
         &self.signing_key_hex
     }
 
     /// Returns a tuple of the account number and signing key
     pub fn keypair_as_hex(&self) -> (&str, &str) {
-        (self.account_number_hex(), self.signing_key_hex())
+        (self.account_number(), self.signing_key())
     }
 
     /// Checks if a signing key and account number are keypairs
@@ -218,7 +216,7 @@ impl Account {
     pub fn is_valid_keypair(_signing_key_hex: &str, _account_number_hex: &str) -> bool {
         let acc = Account::from_signing_key(_signing_key_hex).unwrap();
 
-        acc.account_number_hex().eq(_account_number_hex)
+        acc.account_number().eq(_account_number_hex)
     }
 
     /// Signs the given message with the Account's signing key
@@ -229,7 +227,7 @@ impl Account {
     ///
     pub fn create_signature(&self, message: &str) -> String {
         let message_as_bytes = message.as_bytes();
-        let signed_message = sign_detached(message_as_bytes, &self.signing_key);
+        let signed_message = sign_detached(message_as_bytes, &self.signing_key_bytes);
         hex::encode(signed_message)
     }
 
@@ -263,7 +261,7 @@ impl Account {
     pub fn create_block_message<'a>(&'a self, data: &'a BlockData) -> BlockMessage {
         let serialized_block = serde_json::to_string(&data);
         BlockMessage {
-            account_number: self.account_number_hex(),
+            account_number: self.account_number(),
             message: data,
             signature: self.create_signature(&serialized_block.unwrap()),
         }
@@ -274,7 +272,7 @@ impl Account {
         let serialized_data = serde_json::to_string(&data);
         SignedMessage {
             message: data,
-            node_identifier: self.account_number_hex(),
+            node_identifier: self.account_number(),
             signature: self.create_signature(&serialized_data.unwrap()),
         }
     }

@@ -58,10 +58,10 @@ Therefore, all paths are formatted like this:</p>
 
     <span class="kw">let</span> <span class="ident">get_first_account</span> <span class="op">=</span> <span class="ident">hd</span>.<span class="ident">get_first_account</span>();
 
-    <span class="macro">assert_eq!</span>(<span class="ident">get_first_account</span>.<span class="ident">account_number_hex</span>(),
-                <span class="ident">hd</span>.<span class="ident">get_account</span>(<span class="number">0</span>, <span class="number">0</span>).<span class="ident">account_number_hex</span>());
-    <span class="macro">assert_eq!</span>(<span class="ident">get_first_account</span>.<span class="ident">signing_key_hex</span>(),
-                <span class="ident">hd</span>.<span class="ident">get_account</span>(<span class="number">0</span>, <span class="number">0</span>).<span class="ident">signing_key_hex</span>());
+    <span class="macro">assert_eq!</span>(<span class="ident">get_first_account</span>.<span class="ident">account_number</span>(),
+                <span class="ident">hd</span>.<span class="ident">get_account</span>(<span class="number">0</span>, <span class="number">0</span>).<span class="ident">account_number</span>());
+    <span class="macro">assert_eq!</span>(<span class="ident">get_first_account</span>.<span class="ident">signing_key</span>(),
+                <span class="ident">hd</span>.<span class="ident">get_account</span>(<span class="number">0</span>, <span class="number">0</span>).<span class="ident">signing_key</span>());
 
 </code></pre></div>
 </div></details><details class="rustdoc-toggle method-toggle" open><summary><div id="method.seed_hex" class="method has-srclink"><div class="rightside"><a class="srclink" href="../src/tnb_rs/hd_wallet.rs.html#213-215" title="goto source code">[src]</a></div><a href="#method.seed_hex" class="anchor"></a><h4 class="code-header">pub fn <a href="#method.seed_hex" class="fnname">seed_hex</a>(&amp;self) -&gt; <a class="struct" href="https://doc.rust-lang.org/1.56.0/alloc/string/struct.String.html" title="struct alloc::string::String">String</a></h4></div></summary><div class="docblock"><p>Returns the seed in hex format</p>

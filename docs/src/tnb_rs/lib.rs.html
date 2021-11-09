@@ -127,7 +127,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let acc = Account::new();</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//!     println!(&quot;account number: {}&quot;, acc.account_number_hex());</span>
+<span class="doccomment">//!     println!(&quot;account number: {}&quot;, acc.account_number());</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ## Create an account from an existing signing key</span>
@@ -138,7 +138,7 @@
 <span class="doccomment">//!    let priv_key = &quot;8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467&quot;;</span>
 <span class="doccomment">//!    let acc = Account::from_signing_key(priv_key).unwrap();</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//!    assert_eq!(priv_key, acc.signing_key_hex());</span>
+<span class="doccomment">//!    assert_eq!(priv_key, acc.signing_key());</span>
 <span class="doccomment">//! ```</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!</span>
@@ -201,7 +201,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     // Verify Signature</span>
-<span class="doccomment">//!     let result = Account::verify_signature(&amp;sig, message, &amp;acc.account_number_hex());</span>
+<span class="doccomment">//!     let result = Account::verify_signature(&amp;sig, message, &amp;acc.account_number());</span>
 <span class="doccomment">//!     </span>
 <span class="doccomment">//!     // The result will only be true if it is validated with the original message and the signer&#39;s account_number</span>
 <span class="doccomment">//!     assert_eq!(result, true);</span>

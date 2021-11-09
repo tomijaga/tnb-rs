@@ -197,10 +197,10 @@ impl HDWallet {
     ///
     ///     let get_first_account = hd.get_first_account();
     ///
-    ///     assert_eq!(get_first_account.account_number_hex(),
-    ///                 hd.get_account(0, 0).account_number_hex());
-    ///     assert_eq!(get_first_account.signing_key_hex(),
-    ///                 hd.get_account(0, 0).signing_key_hex());
+    ///     assert_eq!(get_first_account.account_number(),
+    ///                 hd.get_account(0, 0).account_number());
+    ///     assert_eq!(get_first_account.signing_key(),
+    ///                 hd.get_account(0, 0).signing_key());
     ///
     ///
     /// ```
@@ -242,31 +242,31 @@ fn test_vectors_for_ed25519() {
 
     let acc = hd.get_account_from_path("m/0'").unwrap();
     assert_eq!(
-        acc.account_number_hex(),
+        acc.account_number(),
         "86fab68dcb57aa196c77c5f264f215a112c22a912c10d123b0d03c3c28ef1037"
     );
     assert_eq!(
-        acc.signing_key_hex(),
+        acc.signing_key(),
         "1559eb2bbec5790b0c65d8693e4d0875b1747f4970ae8b650486ed7470845635"
     );
     let acc = hd.get_account_from_path("m/0'/2147483647'").unwrap();
     assert_eq!(
-        acc.account_number_hex(),
+        acc.account_number(),
         "5ba3b9ac6e90e83effcd25ac4e58a1365a9e35a3d3ae5eb07b9e4d90bcf7506d"
     );
     assert_eq!(
-        acc.signing_key_hex(),
+        acc.signing_key(),
         "ea4f5bfe8694d8bb74b7b59404632fd5968b774ed545e810de9c32a4fb4192f4"
     );
     let acc = hd
         .get_account_from_path("m/0'/2147483647'/1'/2147483646'/2'")
         .unwrap();
     assert_eq!(
-        acc.account_number_hex(),
+        acc.account_number(),
         "47150c75db263559a70d5778bf36abbab30fb061ad69f69ece61a72b0cfa4fc0"
     );
     assert_eq!(
-        acc.signing_key_hex(),
+        acc.signing_key(),
         "551d333177df541ad876a60ea71f00447931c0a9da16f227c11ea080d7391b8d"
     );
 }
