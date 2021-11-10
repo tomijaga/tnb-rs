@@ -63,9 +63,7 @@ fn create_and_verify_signature() {
 #[test]
 fn serialize_block() {
     let block_data: BlockData = BlockData::CoinTransfer {
-        balance_key: String::from(
-            "72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6",
-        ),
+        balance_key: "72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6",
         txs: vec![
             &Transaction {
                 amount: 1,
@@ -98,7 +96,7 @@ fn serialize_block() {
 
 #[test]
 fn create_block_message() {
-    let acc = Account::from_signing_key(SIGNING_KEY_HEX).unwrap();
+    let acc = Account::new();
 
     let tx = Transaction {
         amount: 1000,
@@ -107,15 +105,17 @@ fn create_block_message() {
         memo: None,
     };
 
-    let data = BlockData::CoinTransfer {
-        balance_key: Account::new().account_number().to_string(),
-        txs: vec![&tx],
-    };
+    let balance_key = acc.account_number();
 
-    let block = acc.create_block_message(&data);
-    let serialized_data = serde_json::to_string(&data).unwrap();
+    let block_data = BlockData::coin_transfer(balance_key, vec![&tx]);
+    let serialized_data = serde_json::to_string(&block_data).unwrap();
+    let block_message = acc.create_block_message(&block_data);
     assert_eq!(
-        Account::verify_signature(&block.signature, &serialized_data, acc.account_number()),
+        Account::verify_signature(
+            &block_message.signature,
+            &serialized_data,
+            acc.account_number()
+        ),
         true
     );
 }

@@ -105,9 +105,18 @@
 extern crate std;
 
 mod account;
+mod client;
 mod hd_wallet;
+mod node;
+mod node_client;
 
 pub use crate::account::{
     Account, BlockData, BlockMessage, ChainData, NodeType, SignedMessage, Transaction,
 };
 pub use crate::hd_wallet::{HDWallet, MAX_CHILD_INDEX};
+pub use node::{
+    bank::Bank,
+    common::{ConfigResponse, PrimaryValidatorConfig},
+    primary_validator::PrimaryValidator,
+    server_node::ServerNode,
+};

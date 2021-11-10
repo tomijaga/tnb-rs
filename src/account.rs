@@ -23,7 +23,7 @@ pub fn hex_to_fixed_bytes<const N: usize>(hex_key: &str) -> [u8; N] {
 }
 
 /// Enum that specifies a Node's type
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Eq, Ord, PartialEq, PartialOrd)]
 pub enum NodeType {
     /// Bank Node
     BANK,
@@ -33,7 +33,7 @@ pub enum NodeType {
 }
 
 /// Transaction Data
-#[derive(Debug, Deserialize, Serialize)]
+#[derive(Debug, Deserialize, Serialize, Eq, Ord, PartialEq, PartialOrd)]
 pub struct Transaction<'tx> {
     /// amount of coins to send
     pub amount: u64,
@@ -57,11 +57,26 @@ pub enum BlockData<'a> {
     /// The Coin Transfer Block Type
     CoinTransfer {
         /// balance key of the sender's account
-        balance_key: String,
+        balance_key: &'a str,
 
         /// An array of transactions to send to the network
         txs: Vec<&'a Transaction<'a>>,
     },
+}
+
+impl BlockData<'_> {
+    /// format coin transfer fields
+    pub fn coin_transfer<'a>(
+        balance_lock: &'a str,
+        mut txs: Vec<&'a Transaction>,
+    ) -> BlockData<'a> {
+        txs.sort_by(|a, b| b.recipient.cmp(&a.recipient));
+
+        BlockData::CoinTransfer {
+            balance_key: balance_lock,
+            txs: txs,
+        }
+    }
 }
 
 /// Block structure to make a block request on the network
