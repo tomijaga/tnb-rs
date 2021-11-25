@@ -1,99 +1,38 @@
-use reqwest::{Client, Result};
+use reqwest::{header::CONTENT_TYPE, Client, Response, Result};
 use serde::{de, Deserialize, Serialize};
 // use std::any::Any;
+use std::collections::HashMap;
 use url::{Origin, Url};
 
-use crate::account::*;
-use crate::node::common::ConfigResponse;
-
-#[derive(Default)]
-#[allow(dead_code)]
-pub struct NodeServerOptions {
-    pub limit: u32,
-    pub offset: u32,
-}
-
-pub type URLQuery = (String, String);
-
-#[derive(Clone, Debug)]
-pub struct NodeServerOptionsIterator {
-    pub index: usize,
-    pub query: Vec<URLQuery>,
-}
-
-impl Iterator for NodeServerOptionsIterator {
-    type Item = URLQuery;
-    fn next<'b>(&'b mut self) -> Option<Self::Item> {
-        let result = if self.query.len() > self.index {
-            let (key, val) = &self.query[self.index];
-
-            Some((key.clone(), val.clone()))
-        } else {
-            None
-        };
-        self.index += 1;
-        result
-    }
-}
-
-impl IntoIterator for NodeServerOptions {
-    type Item = URLQuery;
-    type IntoIter = NodeServerOptionsIterator;
-
-    fn into_iter(self) -> NodeServerOptionsIterator {
-        NodeServerOptionsIterator {
-            index: 0,
-            query: vec![
-                ("limit".to_string(), self.limit.to_string()),
-                ("offset".to_string(), self.offset.to_string()),
-                ("format".to_string(), "json".to_string()),
-            ],
-        }
-    }
-}
+use crate::{
+    models::{NodeType, SearchParams},
+    nodes::ServerNodeTrait,
+    responses::{BlockResponse, ConfigResponse, PaginatedResponse, TransactionResponse},
+};
 
 /// Base Api for a node
 #[allow(dead_code)]
+#[derive(Debug)]
 pub struct ServerNode {
     /// url address of node's server
     pub url: String,
-
-    /// default options for each request
-    pub options: NodeServerOptions,
 }
 
 #[allow(dead_code)]
 impl ServerNode {
-    /// Iniatialize new Node
-    pub fn new(url: &str, options: Option<NodeServerOptions>) -> Self {
-        let parsed_url = Url::parse(url).unwrap();
-
-        let origin = parsed_url.origin();
-
-        let formatted_url = match origin {
-            Origin::Tuple(protocol, host, port) => format!("{}://{}:{}", protocol, host, port),
-            _ => String::new(),
-        };
-
-        ServerNode {
-            url: formatted_url,
-            options: match options {
-                Some(server_options) => server_options,
-                None => Default::default(),
-            },
-        }
-    }
-
     /// Get request to the Node's Server
     #[tokio::main]
     pub async fn get_data<T: de::DeserializeOwned>(
         &self,
         endpoint: &str,
-        query: Option<NodeServerOptions>,
+        query: Option<SearchParams>,
     ) -> Result<T> {
         let url_endpoint = format!("{}{}", self.url, endpoint);
+
         let url = match query {
-            Some(query_params) => Url::parse_with_params(&url_endpoint, query_params).unwrap(),
+            Some(query_params) => {
+                Url::parse_with_params(&url_endpoint, query_params.iter()).unwrap()
+            }
             None => Url::parse(&url_endpoint).unwrap(),
         };
 
@@ -113,11 +52,42 @@ impl ServerNode {
         let client = Client::new();
         let response = client
             .post(url_endpoint)
+            .header(CONTENT_TYPE, "application/json")
+            .json(&data)
             .body(serde_json::to_string(data).unwrap())
             .send()
             .await?;
 
+        let r = &response;
+        println!("\npost response: {:?}, text: ", r.status(),);
+
         Ok(response.json::<T>().await?)
+    }
+
+    /// its unsafe
+    #[tokio::main]
+    pub async fn unsafe_post_data<D: Serialize, T: de::DeserializeOwned>(
+        &self,
+        endpoint: &str,
+        data: &D,
+    ) -> Result<String> {
+        let url_endpoint = format!("{}{}", self.url, endpoint);
+
+        let client = Client::new();
+
+        println!("json data: {:?}", serde_json::to_string(data).unwrap());
+
+        let response = client
+            .post(url_endpoint)
+            .header(CONTENT_TYPE, "application/json")
+            .json(&data)
+            // .body(serde_json::to_string(data).unwrap())
+            .send()
+            .await?;
+
+        println!("\npost response: {:?}, text: ", response.status(),);
+
+        Ok(response.text().await?)
     }
 
     /// Patch request to the Node's Server
@@ -138,6 +108,22 @@ impl ServerNode {
 
         Ok(response.json::<T>().await?)
     }
+}
+
+impl ServerNode {
+    /// Iniatialize new Node
+    pub fn new(url: &str) -> Self {
+        let parsed_url = Url::parse(url).unwrap();
+
+        let origin = parsed_url.origin();
+
+        let formatted_url = match origin {
+            Origin::Tuple(protocol, host, port) => format!("{}://{}:{}", protocol, host, port),
+            _ => String::new(),
+        };
+
+        ServerNode { url: formatted_url }
+    }
 
     /// Get config for this node
     pub fn get_config(&self) -> Result<ConfigResponse> {
@@ -148,45 +134,16 @@ impl ServerNode {
     }
 }
 
-#[derive(Debug, Deserialize)]
-pub struct BlockRecord {
-    id: String,
-    created_date: String,
-    modified_date: String,
-    balance_key: String,
-    sender: String,
-    signature: String,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct TransactionRecord {
-    id: String,
-    block: BlockRecord,
-    amount: u32,
-    recipient: String,
-    fee: Option<String>,
-    memo: Option<String>,
-}
-
-#[derive(Debug, Deserialize)]
-pub struct PaginatedServerResponse<T> {
-    count: u64,
-    next: Option<String>,
-    previous: Option<String>,
-    results: Vec<T>,
-}
-
 #[test]
-
 fn server_get_request() {
-    let node = ServerNode::new("https://bank.keysign.app", None);
+    let node = ServerNode::new("https://bank.keysign.app");
     let response = node
-        .get_data::<PaginatedServerResponse<TransactionRecord>>(
+        .get_data::<PaginatedResponse<TransactionResponse>>(
             "/bank_transactions",
-            Some(NodeServerOptions {
-                limit: 25,
-                offset: 100,
-            }),
+            Some(SearchParams::from([
+                ("limit", "25".to_string()),
+                ("offset", "100".to_string()),
+            ])),
         )
         .unwrap();
 
@@ -196,7 +153,7 @@ fn server_get_request() {
 
 #[test]
 fn get_server_node_config() {
-    let node = ServerNode::new("https://bank.keysign.app", None);
+    let node = ServerNode::new("https://bank.keysign.app");
     let config = node.get_config().unwrap();
 
     assert!(config.default_transaction_fee > 0);
@@ -213,7 +170,7 @@ fn get_server_node_config() {
 //     let acc = Account::new();
 //     let node = ServerNode::new("https://postman-echo.com/post", None);
 
-//     let block_data = BlockData::CoinTransfer {
+//     let block_data = BlockType::CoinTransfer {
 //         balance_key: acc.account_number().to_string(),
 //         txs: vec![],
 //     };

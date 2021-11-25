@@ -74,8 +74,8 @@
 //! ```
 //!     use tnb_rs::{Account, HDWallet};
 //!     
-//!     let m = "visa nephew like this amazing soldier negative front elevator warfare teach good";
-//!     let hd = HDWallet::from_mnemonic(m, None).unwrap();
+//!     let mnemonic = "visa nephew like this amazing soldier negative front elevator warfare teach good";
+//!     let hd = HDWallet::from_mnemonic(mnemonic, None).unwrap();
 //!     
 //!     let acc: Account =  hd.get_first_account();
 //!     let message = "Hidden Message";
@@ -95,9 +95,39 @@
 //!     
 //! ```
 //!
+//! # Wallet
+//! - Sending transactions
+//!
+//! ```no_run
+//!
+//!     use tnb_rs::{Wallet, HDWallet, Account, models::Transaction};
+//!     
+//!     let mnemonic = "visa nephew like this amazing soldier negative front elevator warfare teach good";
+//!     let hd = HDWallet::from_mnemonic(mnemonic, None).unwrap();
+//!     let acc: Account =  hd.get_first_account();
+//!
+//!     let bank_url = "https://bank.keysign.app";
+//!     let mut wallet = Wallet::new(&acc, bank_url);
+//!     
+//!     // gets the fees necessary to send a transaction
+//!     wallet.init();
+//!
+//!     let recipient = "1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224";
+//!     let tx = Transaction::new(recipient, 1000);
+//!
+//!     wallet.send_transaction(&tx);
+//!     
+//!     // Sending Multiple transactions
+//!     let recipient2 = "57d7a6e732b6280e967666a76a827bf75a0a34ace8ccbc530422c81f8d7b1239";
+//!     let tx2 = Transaction::new_with_memo(recipient2, 100, "Account Withdrawal");
+//!
+//!     let txs = vec![tx, tx2];
+//!     wallet.send_transactions(&txs);
+//!
+//! ```
 
 #![warn(future_incompatible)]
-#![deny(missing_docs)] // refuse to compile if documentation is missing
+#![warn(missing_docs)] // refuse to compile if documentation is missing
 #![cfg_attr(not(test), forbid(unsafe_code))]
 
 #[cfg(any(feature = "std", test))]
@@ -107,16 +137,19 @@ extern crate std;
 mod account;
 mod client;
 mod hd_wallet;
-mod node;
 mod node_client;
+mod nodes;
+mod utils;
+mod wallet;
 
-pub use crate::account::{
-    Account, BlockData, BlockMessage, ChainData, NodeType, SignedMessage, Transaction,
-};
+/// Data Types for making on-chain requests
+pub mod models;
+/// Module with the response of every node's endpoints
+pub mod responses;
+
+pub use crate::account::Account;
 pub use crate::hd_wallet::{HDWallet, MAX_CHILD_INDEX};
-pub use node::{
-    bank::Bank,
-    common::{ConfigResponse, PrimaryValidatorConfig},
-    primary_validator::PrimaryValidator,
-    server_node::ServerNode,
-};
+// pub use models::*;
+pub use nodes::*;
+pub use wallet::*;
+// pub use responses::*;
