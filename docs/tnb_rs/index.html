@@ -1,258 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content="rustdoc" />
-    <meta
-      name="description"
-      content="This crate is a SDk for thenewboston cryptocurrency network and it supports account generation, signing and signature verification"
-    />
-    <meta name="keywords" content="rust, rustlang, rust-lang, tnb_rs" />
-    <title>tnb_rs - Rust</title>
-    <link rel="stylesheet" type="text/css" href="../normalize.css" />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../rustdoc.css"
-      id="mainThemeStyle"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="../light.css"
-      id="themeStyle"
-    />
-    <link rel="stylesheet" type="text/css" href="../dark.css" disabled />
-    <link rel="stylesheet" type="text/css" href="../ayu.css" disabled />
-    <script id="default-settings"></script>
-    <script src="../storage.js"></script>
-    <script src="../crates.js"></script>
-    <noscript><link rel="stylesheet" href="../noscript.css" /></noscript>
-    <link rel="alternate icon" type="image/png" href="../favicon-16x16.png" />
-    <link rel="alternate icon" type="image/png" href="../favicon-32x32.png" />
-    <link rel="icon" type="image/svg+xml" href="../favicon.svg" />
-    <style type="text/css">
-      #crate-search {
-        background-image: url("../down-arrow.svg");
-      }
-    </style>
-  </head>
-  <body class="rustdoc mod crate">
-    <!--[if lte IE 11
-      ]><div class="warning">
-        This old browser is unsupported and will most likely display funky
-        things.
-      </div><!
-    [endif]-->
-    <nav class="sidebar">
-      <div class="sidebar-menu" role="button">&#9776;</div>
-      <a href="../tnb_rs/index.html"
-        ><div class="logo-container rust-logo">
-          <img src="../rust-logo.png" alt="logo" /></div
-      ></a>
-      <h2 class="location">Crate tnb_rs</h2>
-      <div class="block version">
-        <div class="narrow-helper"></div>
-        <p>Version 0.1.0</p>
-      </div>
-      <div class="sidebar-elems">
-        <a id="all-types" href="all.html"><p>See all tnb_rs's items</p></a>
-        <div class="block items">
-          <ul>
-            <li><a href="#structs">Structs</a></li>
-            <li><a href="#enums">Enums</a></li>
-            <li><a href="#constants">Constants</a></li>
-          </ul>
-        </div>
-        <div
-          id="sidebar-vars"
-          data-name="tnb_rs"
-          data-ty="mod"
-          data-relpath=""
-        ></div>
-        <script defer src="sidebar-items.js"></script>
-      </div>
-    </nav>
-    <div class="theme-picker">
-      <button
-        id="theme-picker"
-        aria-label="Pick another theme!"
-        aria-haspopup="menu"
-        title="themes"
-      >
-        <img
-          width="18"
-          height="18"
-          alt="Pick another theme!"
-          src="../brush.svg"
-        />
-      </button>
-      <div id="theme-choices" role="menu"></div>
-    </div>
-    <nav class="sub">
-      <form class="search-form">
-        <div class="search-container">
-          <div>
-            <select id="crate-search">
-              <option value="All crates">All crates</option></select
-            ><input
-              class="search-input"
-              name="search"
-              disabled
-              autocomplete="off"
-              spellcheck="false"
-              placeholder="Click or press ‘S’ to search, ‘?’ for more options…"
-              type="search"
-            />
-          </div>
-          <button type="button" id="help-button" title="help">?</button
-          ><a id="settings-menu" href="../settings.html" title="settings"
-            ><img
-              width="18"
-              height="18"
-              alt="Change settings"
-              src="../wheel.svg"
-          /></a>
-        </div>
-      </form>
-    </nav>
-    <section id="main" class="content">
-      <h1 class="fqn">
-        <span class="in-band"
-          >Crate <a class="mod" href="#">tnb_rs</a
-          ><button
-            id="copy-path"
-            onclick="copy_path(this)"
-            title="Copy item path to clipboard"
-          >
-            <img
-              src="../clipboard.svg"
-              width="19"
-              height="18"
-              alt="Copy item path"
-            /></button></span
-        ><span class="out-of-band"
-          ><span id="render-detail"
-            ><a
-              id="toggle-all-docs"
-              href="javascript:void(0)"
-              title="collapse all docs"
-              >[<span class="inner">&#x2212;</span>]</a
-            ></span
-          ><a
-            class="srclink"
-            href="../src/tnb_rs/lib.rs.html#1-113"
-            title="goto source code"
-            >[src]</a
-          ></span
-        >
-      </h1>
-      <details class="rustdoc-toggle top-doc" open>
-        <summary class="hideme"><span>Expand description</span></summary>
-        <div class="docblock">
-          <p>
-            This crate is a SDk for
-            <a href="https://thenewboston.com/">thenewboston</a> cryptocurrency
-            network and it supports account generation, signing and signature
-            verification
-          </p>
-          <h1 id="account" class="section-header">
-            <a href="#account">Account</a>
-          </h1>
-          <ul>
-            <li>
-              Accounts on
-              <a href="https://thenewboston.com/">thenewboston</a> are anonymous
-              identites with a signing key and an account number where coins can
-              be sent to and from.
-            </li>
-            <li>
-              The person who has access to an account’s signing key has total
-              control over the account’s coins so ensure you store your signing
-              key safely
-            </li>
-          </ul>
-          <h2 id="create-a-random-account" class="section-header">
-            <a href="#create-a-random-account">Create a Random Account</a>
-          </h2>
-          <div class="example-wrap">
-            <pre
-              class="rust rust-example-rendered"
-            ><code>    <span class="kw">use</span> <span class="ident">tnb_rs::Account</span>;
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="This crate is a SDk for thenewboston cryptocurrency network and it supports account generation, signing and signature verification"><meta name="keywords" content="rust, rustlang, rust-lang, tnb_rs"><title>tnb_rs - Rust</title><link rel="stylesheet" type="text/css" href="../normalize.css"><link rel="stylesheet" type="text/css" href="../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../ayu.css" disabled ><script id="default-settings" ></script><script src="../storage.js"></script><script src="../crates.js"></script><noscript><link rel="stylesheet" href="../noscript.css"></noscript><link rel="alternate icon" type="image/png" href="../favicon-16x16.png"><link rel="alternate icon" type="image/png" href="../favicon-32x32.png"><link rel="icon" type="image/svg+xml" href="../favicon.svg"><style type="text/css">#crate-search{background-image:url("../down-arrow.svg");}</style></head><body class="rustdoc mod crate"><!--[if lte IE 11]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu" role="button">&#9776;</div><a href='../tnb_rs/index.html'><div class='logo-container rust-logo'><img src='../rust-logo.png' alt='logo'></div></a><h2 class="location">Crate tnb_rs</h2><div class="block version"><div class="narrow-helper"></div><p>Version 0.1.0</p></div><div class="sidebar-elems"><a id="all-types" href="all.html"><p>See all tnb_rs's items</p></a><div class="block items"><ul><li><a href="#modules">Modules</a></li><li><a href="#structs">Structs</a></li><li><a href="#constants">Constants</a></li><li><a href="#traits">Traits</a></li></ul></div><div id="sidebar-vars" data-name="tnb_rs" data-ty="mod" data-relpath=""></div><script defer src="sidebar-items.js"></script></div></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!" aria-haspopup="menu" title="themes"><img width="18" height="18" alt="Pick another theme!" src="../brush.svg"></button><div id="theme-choices" role="menu"></div></div><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><button type="button" id="help-button" title="help">?</button><a id="settings-menu" href="../settings.html" title="settings"><img width="18" height="18" alt="Change settings" src="../wheel.svg"></a></div></form></nav><section id="main" class="content"><h1 class="fqn"><span class="in-band">Crate <a class="mod" href="#">tnb_rs</a><button id="copy-path" onclick="copy_path(this)" title="Copy item path to clipboard"><img src="../clipboard.svg" width="19" height="18" alt="Copy item path"></button></span><span class="out-of-band"><span id="render-detail"><a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">[<span class="inner">&#x2212;</span>]</a></span><a class="srclink" href="../src/tnb_rs/lib.rs.html#1-154" title="goto source code">[src]</a></span></h1><details class="rustdoc-toggle top-doc" open><summary class="hideme"><span>Expand description</span></summary><div class="docblock"><p>This crate is a SDk for <a href="https://thenewboston.com/">thenewboston</a> cryptocurrency network and it
+supports account generation, signing and signature verification</p>
+<h1 id="account" class="section-header"><a href="#account">Account</a></h1>
+<ul>
+<li>Accounts on <a href="https://thenewboston.com/">thenewboston</a> are anonymous identites with a signing key and an account number where coins can be sent to and from.</li>
+<li>The person who has access to an account’s signing key has total control over the account’s coins so ensure you store your signing key safely</li>
+</ul>
+<h2 id="create-a-random-account" class="section-header"><a href="#create-a-random-account">Create a Random Account</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>    <span class="kw">use</span> <span class="ident">tnb_rs::Account</span>;
 
     <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">Account::new</span>();
 
-    <span class="macro">println!</span>(<span class="string">&quot;account number: {}&quot;</span>, <span class="ident">acc</span>.<span class="ident">account_number</span>());</code></pre>
-          </div>
-          <h2
-            id="create-an-account-from-an-existing-signing-key"
-            class="section-header"
-          >
-            <a href="#create-an-account-from-an-existing-signing-key"
-              >Create an account from an existing signing key</a
-            >
-          </h2>
-          <div class="example-wrap">
-            <pre
-              class="rust rust-example-rendered"
-            ><code>   <span class="kw">use</span> <span class="ident">tnb_rs::Account</span>;
+    <span class="macro">println!</span>(<span class="string">&quot;account number: {}&quot;</span>, <span class="ident">acc</span>.<span class="ident">account_number</span>());</code></pre></div>
+<h2 id="create-an-account-from-an-existing-signing-key" class="section-header"><a href="#create-an-account-from-an-existing-signing-key">Create an account from an existing signing key</a></h2>
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>   <span class="kw">use</span> <span class="ident">tnb_rs::Account</span>;
 
    <span class="kw">let</span> <span class="ident">priv_key</span> <span class="op">=</span> <span class="string">&quot;8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467&quot;</span>;
    <span class="kw">let</span> <span class="ident">acc</span> <span class="op">=</span> <span class="ident">Account::from_signing_key</span>(<span class="ident">priv_key</span>).<span class="ident">unwrap</span>();
 
-   <span class="macro">assert_eq!</span>(<span class="ident">priv_key</span>, <span class="ident">acc</span>.<span class="ident">signing_key</span>());</code></pre>
-          </div>
-          <h1 id="hdwallet" class="section-header">
-            <a href="#hdwallet">HDWallet</a>
-          </h1>
-          <p>Reasons to use a HD Wallet:</p>
-          <ul>
-            <li>
-              Uses a mnemonic phrase that is easier to remember than a 32 byte
-              hex number
-            </li>
-            <li>
-              Can generate a lot of child accounts up to
-              4,611,686,014,132,420,600 for the bip44 standard
-            </li>
-            <li>
-              Useful for staying hidden on a public and decentralized network
-              such as thenewboston
-            </li>
-          </ul>
-          <h2 id="create-a-hdwallet" class="section-header">
-            <a href="#create-a-hdwallet">Create a HDWallet</a>
-          </h2>
-          <ul>
-            <li>Creating a random HD Wallet</li>
-          </ul>
+   <span class="macro">assert_eq!</span>(<span class="ident">priv_key</span>, <span class="ident">acc</span>.<span class="ident">signing_key</span>());</code></pre></div>
+<h1 id="hdwallet" class="section-header"><a href="#hdwallet">HDWallet</a></h1>
+<p>Reasons to use a HD Wallet:</p>
+<ul>
+<li>Uses a mnemonic phrase that is easier to remember than a 32 byte hex number</li>
+<li>Can generate a lot of child accounts up to 4,611,686,014,132,420,600 for the bip44 standard</li>
+<li>Useful for staying hidden on a public and decentralized network such as thenewboston</li>
+</ul>
+<h2 id="create-a-hdwallet" class="section-header"><a href="#create-a-hdwallet">Create a HDWallet</a></h2>
+<ul>
+<li>Creating a random HD Wallet</li>
+</ul>
 
-          <div class="example-wrap">
-            <pre
-              class="rust rust-example-rendered"
-            ><code>    <span class="kw">use</span> <span class="ident">tnb_rs::HDWallet</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>    <span class="kw">use</span> <span class="ident">tnb_rs::HDWallet</span>;
 
     <span class="kw">let</span> <span class="ident">hd</span> <span class="op">=</span> <span class="ident">HDWallet::new</span>();
      
     <span class="comment">// store your mnemonic phrase safely</span>
     <span class="macro">println!</span>(<span class="string">&quot;mnemonic phrase: {}&quot;</span>, <span class="ident">hd</span>.<span class="ident">mnemonic</span>());
-</code></pre>
-          </div>
-          <ul>
-            <li>Creating a HD Wallet from a mnemonic phrase</li>
-          </ul>
-          <blockquote>
-            <p>
-              This method allows the user to set an optional password for added
-              security on their account keys.
-            </p>
-          </blockquote>
+</code></pre></div>
+<ul>
+<li>Creating a HD Wallet from a mnemonic phrase</li>
+</ul>
+<blockquote>
+<p>This method allows the user to set an optional password for added security on their account keys.</p>
+</blockquote>
 
-          <div class="example-wrap">
-            <pre
-              class="rust rust-example-rendered"
-            ><code>    <span class="kw">use</span> <span class="ident">tnb_rs::HDWallet</span>;
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>    <span class="kw">use</span> <span class="ident">tnb_rs::HDWallet</span>;
 
     <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="string">&quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;</span>;
 
@@ -264,22 +56,16 @@
 
      
     <span class="macro">assert_eq!</span>(<span class="ident">hd</span>.<span class="ident">mnemonic</span>(), <span class="ident">m</span>);
-</code></pre>
-          </div>
-          <h1 id="signature" class="section-header">
-            <a href="#signature">Signature</a>
-          </h1>
-          <ul>
-            <li>Creating and verifing a signature</li>
-          </ul>
+</code></pre></div>
+<h1 id="signature" class="section-header"><a href="#signature">Signature</a></h1>
+<ul>
+<li>Creating and verifing a signature</li>
+</ul>
 
-          <div class="example-wrap">
-            <pre
-              class="rust rust-example-rendered"
-            ><code>    <span class="kw">use</span> <span class="ident">tnb_rs</span>::{<span class="ident">Account</span>, <span class="ident">HDWallet</span>};
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>    <span class="kw">use</span> <span class="ident">tnb_rs</span>::{<span class="ident">Account</span>, <span class="ident">HDWallet</span>};
      
-    <span class="kw">let</span> <span class="ident">m</span> <span class="op">=</span> <span class="string">&quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;</span>;
-    <span class="kw">let</span> <span class="ident">hd</span> <span class="op">=</span> <span class="ident">HDWallet::from_mnemonic</span>(<span class="ident">m</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">mnemonic</span> <span class="op">=</span> <span class="string">&quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;</span>;
+    <span class="kw">let</span> <span class="ident">hd</span> <span class="op">=</span> <span class="ident">HDWallet::from_mnemonic</span>(<span class="ident">mnemonic</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap</span>();
      
     <span class="kw">let</span> <span class="ident">acc</span>: <span class="ident">Account</span> <span class="op">=</span>  <span class="ident">hd</span>.<span class="ident">get_first_account</span>();
     <span class="kw">let</span> <span class="ident">message</span> <span class="op">=</span> <span class="string">&quot;Hidden Message&quot;</span>;
@@ -296,133 +82,52 @@
      
     <span class="comment">// The result will only be true if it is validated with the original message and the signer&#39;s account_number</span>
     <span class="macro">assert_eq!</span>(<span class="ident">result</span>, <span class="bool-val">true</span>);
-     </code></pre>
-          </div>
-        </div>
-      </details>
-      <h2 id="structs" class="section-header">
-        <a href="#structs">Structs</a>
-      </h2>
-      <div class="item-table">
-        <div class="item-left module-item">
-          <a
-            class="struct"
-            href="struct.Account.html"
-            title="tnb_rs::Account struct"
-            >Account</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>An Account consists of an account number and a signing key.</p>
-        </div>
-        <div class="item-left module-item">
-          <a
-            class="struct"
-            href="struct.BlockMessage.html"
-            title="tnb_rs::BlockMessage struct"
-            >BlockMessage</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>Block structure to make a block request on the network</p>
-        </div>
-        <div class="item-left module-item">
-          <a
-            class="struct"
-            href="struct.HDWallet.html"
-            title="tnb_rs::HDWallet struct"
-            >HDWallet</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>
-            A Hierarchical Deterministic Wallet (HD Wallet) is a wallet that
-            generates child keys (Accounts) from a mnemonic phrase and stores
-            them in a tree like structure.
-          </p>
-        </div>
-        <div class="item-left module-item">
-          <a
-            class="struct"
-            href="struct.SignedMessage.html"
-            title="tnb_rs::SignedMessage struct"
-            >SignedMessage</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>Structure for making Node requests to the network</p>
-        </div>
-        <div class="item-left module-item">
-          <a
-            class="struct"
-            href="struct.Transaction.html"
-            title="tnb_rs::Transaction struct"
-            >Transaction</a
-          >
-        </div>
-        <div class="item-right docblock-short"><p>Transaction Data</p></div>
-      </div>
-      <h2 id="enums" class="section-header"><a href="#enums">Enums</a></h2>
-      <div class="item-table">
-        <div class="item-left module-item">
-          <a
-            class="enum"
-            href="enum.BlockType.html"
-            title="tnb_rs::BlockType enum"
-            >BlockType</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>Contains the structure of supported block types</p>
-        </div>
-        <div class="item-left module-item">
-          <a
-            class="enum"
-            href="enum.ChainData.html"
-            title="tnb_rs::ChainData enum"
-            >ChainData</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>Enum for Supported Node Requests</p>
-        </div>
-        <div class="item-left module-item">
-          <a
-            class="enum"
-            href="enum.NodeType.html"
-            title="tnb_rs::NodeType enum"
-            >NodeType</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>Enum that specifies a Node’s type</p>
-        </div>
-      </div>
-      <h2 id="constants" class="section-header">
-        <a href="#constants">Constants</a>
-      </h2>
-      <div class="item-table">
-        <div class="item-left module-item">
-          <a
-            class="constant"
-            href="constant.MAX_CHILD_INDEX.html"
-            title="tnb_rs::MAX_CHILD_INDEX constant"
-            >MAX_CHILD_INDEX</a
-          >
-        </div>
-        <div class="item-right docblock-short">
-          <p>The max number for the account_index and address_index</p>
-        </div>
-      </div>
-    </section>
-    <section id="search" class="content hidden"></section>
-    <div
-      id="rustdoc-vars"
-      data-root-path="../"
-      data-current-crate="tnb_rs"
-      data-search-index-js="../search-index.js"
-      data-search-js="../search.js"
-    ></div>
+     </code></pre></div>
+<h1 id="wallet" class="section-header"><a href="#wallet">Wallet</a></h1>
+<ul>
+<li>Sending transactions</li>
+</ul>
+
+<div class="example-wrap"><pre class="rust rust-example-rendered"><code>
+    <span class="kw">use</span> <span class="ident">tnb_rs</span>::{<span class="ident">Wallet</span>, <span class="ident">HDWallet</span>, <span class="ident">Account</span>, <span class="ident">models::Transaction</span>};
+     
+    <span class="kw">let</span> <span class="ident">mnemonic</span> <span class="op">=</span> <span class="string">&quot;visa nephew like this amazing soldier negative front elevator warfare teach good&quot;</span>;
+    <span class="kw">let</span> <span class="ident">hd</span> <span class="op">=</span> <span class="ident">HDWallet::from_mnemonic</span>(<span class="ident">mnemonic</span>, <span class="prelude-val">None</span>).<span class="ident">unwrap</span>();
+    <span class="kw">let</span> <span class="ident">acc</span>: <span class="ident">Account</span> <span class="op">=</span>  <span class="ident">hd</span>.<span class="ident">get_first_account</span>();
+
+    <span class="kw">let</span> <span class="ident">bank_url</span> <span class="op">=</span> <span class="string">&quot;https://bank.keysign.app&quot;</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">wallet</span> <span class="op">=</span> <span class="ident">Wallet::new</span>(<span class="kw-2">&amp;</span><span class="ident">acc</span>, <span class="ident">bank_url</span>);
+     
+    <span class="comment">// gets the fees necessary to send a transaction</span>
+    <span class="ident">wallet</span>.<span class="ident">init</span>();
+
+    <span class="kw">let</span> <span class="ident">recipient</span> <span class="op">=</span> <span class="string">&quot;1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224&quot;</span>;
+    <span class="kw">let</span> <span class="ident">tx</span> <span class="op">=</span> <span class="ident">Transaction::new</span>(<span class="ident">recipient</span>, <span class="number">1000</span>);
+
+    <span class="ident">wallet</span>.<span class="ident">send_transaction</span>(<span class="kw-2">&amp;</span><span class="ident">tx</span>);
+     
+    <span class="comment">// Sending Multiple transactions</span>
+    <span class="kw">let</span> <span class="ident">recipient2</span> <span class="op">=</span> <span class="string">&quot;57d7a6e732b6280e967666a76a827bf75a0a34ace8ccbc530422c81f8d7b1239&quot;</span>;
+    <span class="kw">let</span> <span class="ident">tx2</span> <span class="op">=</span> <span class="ident">Transaction::new_with_memo</span>(<span class="ident">recipient2</span>, <span class="number">100</span>, <span class="string">&quot;Account Withdrawal&quot;</span>);
+
+    <span class="kw">let</span> <span class="ident">txs</span> <span class="op">=</span> <span class="macro">vec!</span>[<span class="ident">tx</span>, <span class="ident">tx2</span>];
+    <span class="ident">wallet</span>.<span class="ident">send_transactions</span>(<span class="kw-2">&amp;</span><span class="ident">txs</span>);
+</code></pre></div>
+</div></details><h2 id="modules" class="section-header"><a href="#modules">Modules</a></h2>
+<div class="item-table"><div class="item-left module-item"><a class="mod" href="models/index.html" title="tnb_rs::models mod">models</a></div><div class="item-right docblock-short"><p>Data Types for making on-chain requests</p>
+</div><div class="item-left module-item"><a class="mod" href="responses/index.html" title="tnb_rs::responses mod">responses</a></div><div class="item-right docblock-short"><p>Module with the response of every node’s endpoints</p>
+</div></div><h2 id="structs" class="section-header"><a href="#structs">Structs</a></h2>
+<div class="item-table"><div class="item-left module-item"><a class="struct" href="struct.Account.html" title="tnb_rs::Account struct">Account</a></div><div class="item-right docblock-short"><p>An Account consists of an account number and a signing key.</p>
+</div><div class="item-left module-item"><a class="struct" href="struct.ConfirmationValidator.html" title="tnb_rs::ConfirmationValidator struct">ConfirmationValidator</a></div><div class="item-right docblock-short"><p>Confirmation Validator</p>
+</div><div class="item-left module-item"><a class="struct" href="struct.HDWallet.html" title="tnb_rs::HDWallet struct">HDWallet</a></div><div class="item-right docblock-short"><p>A Hierarchical Deterministic Wallet (HD Wallet) is a wallet that generates child keys (Accounts) from a mnemonic phrase and stores them in a tree like structure.</p>
+</div><div class="item-left module-item"><a class="struct" href="struct.PrimaryValidator.html" title="tnb_rs::PrimaryValidator struct">PrimaryValidator</a></div><div class="item-right docblock-short"><p>Primary Validator</p>
+</div><div class="item-left module-item"><a class="struct" href="struct.RegularNode.html" title="tnb_rs::RegularNode struct">RegularNode</a></div><div class="item-right docblock-short"><p>A regular node that retrieves chain data and forwards blocks to the primary validator</p>
+</div><div class="item-left module-item"><a class="struct" href="struct.Wallet.html" title="tnb_rs::Wallet struct">Wallet</a></div><div class="item-right docblock-short"><p>Wallet Client for sending transactions on the network</p>
+</div></div><h2 id="constants" class="section-header"><a href="#constants">Constants</a></h2>
+<div class="item-table"><div class="item-left module-item"><a class="constant" href="constant.MAX_CHILD_INDEX.html" title="tnb_rs::MAX_CHILD_INDEX constant">MAX_CHILD_INDEX</a></div><div class="item-right docblock-short"><p>The max number for the account_index and address_index</p>
+</div></div><h2 id="traits" class="section-header"><a href="#traits">Traits</a></h2>
+<div class="item-table"><div class="item-left module-item"><a class="trait" href="trait.ServerNodeTrait.html" title="tnb_rs::ServerNodeTrait trait">ServerNodeTrait</a></div><div class="item-right docblock-short"><p>Trait for common methods across nodes</p>
+</div><div class="item-left module-item"><a class="trait" href="trait.ValidatorTrait.html" title="tnb_rs::ValidatorTrait trait">ValidatorTrait</a></div><div class="item-right docblock-short"><p>Traits with the methods needed on all Validator Nodes</p>
+</div></div></section><section id="search" class="content hidden"></section><div id="rustdoc-vars" data-root-path="../" data-current-crate="tnb_rs" data-search-index-js="../search-index.js" data-search-js="../search.js"></div>
     <script src="../main.js"></script>
-  </body>
-</html>
+</body></html>

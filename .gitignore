@@ -12,3 +12,4 @@ Cargo.lock
 
 .history/
 node_client
+update_docs.sh
