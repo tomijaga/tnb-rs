@@ -1,7 +1,8 @@
+use tnb_rs::models::*;
 use tnb_rs::*;
 
-const SIGNING_KEY_HEX: &str = "8cf08eb96b00b5a4df86a750bb7ae595a9dbbe91fc091463bfb3d950d5dac467";
-const ACCOUNT_NUMBER_HEX: &str = "e6ba479bc9098608d4bb756ff80093ffa1c2200c3c282b90e9d2f5e1f7adab41";
+const SIGNING_KEY_HEX: &str = "4b3e69add153435a30c03f6ba4576cedeacfd9d362272a39863f0f3e37eda72c";
+const ACCOUNT_NUMBER_HEX: &str = "1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224";
 
 #[test]
 fn generates_random_account() {
@@ -41,6 +42,35 @@ fn is_valid_keypair() {
 }
 
 #[test]
+
+fn create_signature() {
+    let acc = Account::from_signing_key(SIGNING_KEY_HEX).unwrap();
+
+    let sig = acc.create_signature("signature");
+
+    let correct_signature = "c41031b2a948e8deb82ce97028fd05b64c9da1e64081c45fdc42ee1a4f837858d0a6cdfc1a52bee4b02cca57d3ba3e28590564f8efda36287441332824088a0f";
+    println!(" sig: {:?}", sig);
+    assert_eq!(sig, correct_signature);
+}
+
+#[test]
+fn create_tx_signature() {
+    let acc = Account::from_signing_key(SIGNING_KEY_HEX).unwrap();
+
+    let tx = Transaction {
+        amount: 1,
+        recipient: "000000000000000000000000000000000000000000000000000000000000dead",
+        memo: None,
+        fee: None,
+    };
+    let sig = acc.create_signature(&serde_json::to_string(&tx).unwrap());
+
+    let correct_signature = "896c8da285fca88cd938a039d7d4870a47808b94c73aad2dc6e346e4567b49514239ef93d782c7192f797b9f6f7096b944bca9ff245b6288a373875c8c8f090a";
+    println!(" sig: {:?}", sig);
+    assert_eq!(sig, correct_signature);
+}
+
+#[test]
 fn create_and_verify_signature() {
     let acc = Account::from_signing_key(SIGNING_KEY_HEX).unwrap();
     let message = "testing create signature";
@@ -61,61 +91,50 @@ fn create_and_verify_signature() {
 }
 
 #[test]
-fn serialize_block() {
-    let block_data: BlockData = BlockData::CoinTransfer {
-        balance_key: String::from(
-            "72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6",
-        ),
-        txs: vec![
-            &Transaction {
-                amount: 1,
-                recipient: "06e51367ffdb5e3e3c31118596e0956a48b1ffde327974d39ce1c3d3685e30ab",
-                fee: None,
-                memo: Some("AEz"),
-            },
-            &Transaction {
-                amount: 1,
-                recipient: "29865762fae7d26e51f6465b3fea436d513478cfb8aa068e88a927e887cdc5fc",
-                fee: Some(NodeType::BANK),
-                memo: None,
-            },
-            &Transaction {
-                amount: 1,
-                recipient: "ec8f6734272e8d9d5ea995479dd6d173424be38b313a3069d5fa62e7038a08e9",
-                fee: Some(NodeType::PRIMARY_VALIDATOR),
-                memo: None,
-            },
-        ],
-    };
-    let block_message = BlockMessage{
-        account_number: "72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6",
-        message: &block_data,
-        signature: "ee5a2f2a2f5261c1b633e08dd61182fd0db5604c853ebd8498f6f28ce8e2ccbbc38093918610ea88a7ad47c7f3192ed955d9d1529e7e390013e43f25a5915c0f".to_string(),
-    };
-    let test_block = "{\"account_number\":\"72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6\",\"message\":{\"balance_key\":\"72fe3f3cc0b70a7f75d21e14b092ea805fc109eb7137e431fe8a94b2df3dc4a6\",\"txs\":[{\"amount\":1,\"recipient\":\"06e51367ffdb5e3e3c31118596e0956a48b1ffde327974d39ce1c3d3685e30ab\",\"memo\":\"AEz\"},{\"amount\":1,\"recipient\":\"29865762fae7d26e51f6465b3fea436d513478cfb8aa068e88a927e887cdc5fc\",\"fee\":\"BANK\"},{\"amount\":1,\"recipient\":\"ec8f6734272e8d9d5ea995479dd6d173424be38b313a3069d5fa62e7038a08e9\",\"fee\":\"PRIMARY_VALIDATOR\"}]},\"signature\":\"ee5a2f2a2f5261c1b633e08dd61182fd0db5604c853ebd8498f6f28ce8e2ccbbc38093918610ea88a7ad47c7f3192ed955d9d1529e7e390013e43f25a5915c0f\"}";
-    assert_eq!(serde_json::to_string(&block_message).unwrap(), test_block);
-}
-
-#[test]
 fn create_block_message() {
-    let acc = Account::from_signing_key(SIGNING_KEY_HEX).unwrap();
+    let acc = Account::from_signing_key(
+        "4b3e69add153435a30c03f6ba4576cedeacfd9d362272a39863f0f3e37eda72c",
+    )
+    .unwrap();
 
     let tx = Transaction {
-        amount: 1000,
-        recipient: acc.account_number(),
+        amount: 1,
         fee: None,
+        recipient: "000000000000000000000000000000000000000000000000000000000000dead",
         memo: None,
     };
 
-    let data = BlockData::CoinTransfer {
-        balance_key: Account::new().account_number().to_string(),
-        txs: vec![&tx],
+    let node_fee = Transaction {
+        amount: 1,
+        fee: Some(NodeType::BANK),
+        recipient: "29865762fae7d26e51f6465b3fea436d513478cfb8aa068e88a927e887cdc5fc",
+        memo: None,
     };
 
-    let block = acc.create_block_message(&data);
-    let serialized_data = serde_json::to_string(&data).unwrap();
+    let pv_fee = Transaction {
+        amount: 1,
+        fee: Some(NodeType::PRIMARY_VALIDATOR),
+        recipient: "ec8f6734272e8d9d5ea995479dd6d173424be38b313a3069d5fa62e7038a08e9",
+        memo: None,
+    };
+
+    let txs = vec![&tx, &node_fee, &pv_fee];
+    let balance_key =
+        "1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224".to_string();
+
+    let block_data = BlockType::coin_transfer(balance_key, txs);
+    let block_message = acc.create_block_message(&block_data);
+
+    let serialized_data = serde_json::to_string(&block_data).unwrap();
+
+    println!("block_message: {:?}\n\n", block_message);
+
     assert_eq!(
-        Account::verify_signature(&block.signature, &serialized_data, acc.account_number()),
+        Account::verify_signature(
+            &block_message.signature,
+            &serialized_data,
+            acc.account_number()
+        ),
         true
     );
 }

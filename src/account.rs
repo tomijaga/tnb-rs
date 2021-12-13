@@ -1,13 +1,14 @@
 use anyhow::{ensure, Result};
 use hex;
-use serde::{Deserialize, Serialize};
 use sodiumoxide::crypto::sign;
 use sodiumoxide::crypto::sign::ed25519::{
     sign_detached, verify_detached, PublicKey, SecretKey, Seed, Signature,
 };
 use std::{convert::TryInto, fmt};
 
-pub fn convert_vec_to_fixed_array<T, const N: usize>(vec: Vec<T>) -> [T; N] {
+use crate::models::{BlockMessage, BlockType, ChainData, SignedMessage, Transaction};
+
+fn convert_vec_to_fixed_array<T, const N: usize>(vec: Vec<T>) -> [T; N] {
     vec.try_into().unwrap_or_else(|v: Vec<T>| {
         panic!(
             "Expected a hex of length {} but it was {}",
@@ -17,88 +18,9 @@ pub fn convert_vec_to_fixed_array<T, const N: usize>(vec: Vec<T>) -> [T; N] {
     })
 }
 
-pub fn hex_to_fixed_bytes<const N: usize>(hex_key: &str) -> [u8; N] {
+fn hex_to_fixed_bytes<const N: usize>(hex_key: &str) -> [u8; N] {
     let key_as_bytes = hex::decode(hex_key).ok().expect("Hex Key is invalid");
     convert_vec_to_fixed_array::<u8, N>(key_as_bytes)
-}
-
-/// Enum that specifies a Node's type
-#[derive(Debug, Deserialize, Serialize)]
-pub enum NodeType {
-    /// Bank Node
-    BANK,
-    /// Primary Validator Node
-    #[allow(non_camel_case_types)]
-    PRIMARY_VALIDATOR,
-}
-
-/// Transaction Data
-#[derive(Debug, Deserialize, Serialize)]
-pub struct Transaction<'tx> {
-    /// amount of coins to send
-    pub amount: u64,
-
-    /// The recipients account number
-    pub recipient: &'tx str,
-
-    /// The fee paid to the node processing the transaction
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub fee: Option<NodeType>,
-
-    /// optional message to add to the transaction
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub memo: Option<&'tx str>,
-}
-
-/// Contains the structure of supported block types
-#[derive(Debug, Serialize)]
-#[serde(untagged)]
-pub enum BlockData<'a> {
-    /// The Coin Transfer Block Type
-    CoinTransfer {
-        /// balance key of the sender's account
-        balance_key: String,
-
-        /// An array of transactions to send to the network
-        txs: Vec<&'a Transaction<'a>>,
-    },
-}
-
-/// Block structure to make a block request on the network
-#[derive(Debug, Serialize)]
-pub struct BlockMessage<'a> {
-    /// sender's account number
-    pub account_number: &'a str,
-
-    /// block message that contains the sender's request
-    pub message: &'a BlockData<'a>,
-
-    /// thh signed message
-    pub signature: String,
-}
-
-/// Enum for Supported Node Requests
-#[derive(Debug, Deserialize, Serialize)]
-#[serde(untagged)]
-pub enum ChainData {
-    /// Request structure for changing an account's trust
-    UpdateAccountTrust {
-        /// account's trust
-        trust: i32,
-    },
-}
-
-/// Structure for making Node requests to the network
-#[derive(Debug, Serialize)]
-pub struct SignedMessage<'a> {
-    /// message that contains the node's request
-    pub message: &'a ChainData,
-
-    /// The node's identification number
-    pub node_identifier: &'a str,
-
-    /// thh signed message
-    pub signature: String,
 }
 
 /// An Account consists of an account number and a signing key.
@@ -258,7 +180,7 @@ impl Account {
     }
 
     /// Creates a block message that can be broadcasted to make changes to an account on the network
-    pub fn create_block_message<'a>(&'a self, data: &'a BlockData) -> BlockMessage {
+    pub fn create_block_message<'a>(&'a self, data: &'a BlockType) -> BlockMessage {
         let serialized_block = serde_json::to_string(&data);
         BlockMessage {
             account_number: self.account_number(),
