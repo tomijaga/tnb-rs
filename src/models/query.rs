@@ -4,7 +4,7 @@ use std::collections::HashMap;
 pub type SearchParams<'a> = HashMap<&'a str, String>;
 
 /// Trait for endpoints that return paginated data
-pub trait PaginatedSearchParams<'a> {
+pub trait PaginatedQueryTrait<'a> {
     /// Get a reference to the data store of
     fn get_mut_params(&mut self) -> &mut SearchParams<'a>;
 

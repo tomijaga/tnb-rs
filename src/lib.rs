@@ -109,7 +109,8 @@
 //!     let bank_url = "https://bank.keysign.app";
 //!     let mut wallet = Wallet::new(&acc, bank_url);
 //!     
-//!     // gets the fees necessary to send a transaction
+//!     // This method retrieves the nodes transaction fee details
+//!     // It is important to call this method before sending a transaction
 //!     wallet.init();
 //!
 //!     let recipient = "1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224";
@@ -125,9 +126,26 @@
 //!     wallet.send_transactions(&txs);
 //!
 //! ```
+//!
+//! # Nodes
+//! - Connect directly to the network nodes
+//! ```
+//!     use tnb_rs::nodes::{RegularNode, PrimaryValidator, ConfirmationValidator};
+//!     
+//!     let cv = ConfirmationValidator::new("http://54.241.48.170");
+//!
+//!     let node = RegularNode::new("https://bank.keysign.app");
+//!
+//!     let pv = PrimaryValidator::new("http://52.52.160.149");
+//!
+//!     // or get the selected pv of a node
+//!     let pv: PrimaryValidator = node.get_pv().unwrap();
+//!
+//! ```
+//!
 
 #![warn(future_incompatible)]
-#![warn(missing_docs)] // refuse to compile if documentation is missing
+#![deny(missing_docs)] // refuse to compile if documentation is missing
 #![cfg_attr(not(test), forbid(unsafe_code))]
 
 #[cfg(any(feature = "std", test))]
@@ -137,19 +155,20 @@ extern crate std;
 mod account;
 mod client;
 mod hd_wallet;
-mod node_client;
-mod nodes;
 mod utils;
 mod wallet;
 
 /// Data Types for making on-chain requests
 pub mod models;
+
+/// Different nodes on the network
+pub mod nodes;
+
 /// Module with the response of every node's endpoints
 pub mod responses;
 
 pub use crate::account::Account;
 pub use crate::hd_wallet::{HDWallet, MAX_CHILD_INDEX};
 // pub use models::*;
-pub use nodes::*;
 pub use wallet::*;
 // pub use responses::*;

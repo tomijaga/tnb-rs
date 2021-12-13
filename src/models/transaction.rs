@@ -1,9 +1,8 @@
 use crate::{
     account::Account,
-    models::{PaginatedSearchParams, SearchParams},
+    models::{PaginatedQueryTrait, SearchParams},
 };
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 /// Enum that specifies a Node's type
 #[derive(Debug, Deserialize, Serialize, Eq, Ord, PartialEq, PartialOrd, Clone)]
@@ -76,58 +75,37 @@ impl Transaction<'_> {
 /// Query Builder for a get transactions network request
 ///
 /// # Field
-/// - **account_number**:
-///
-/// # Example
-///
-/// ```no_run
-///
-///     use tnb_rs::{models::{NodeType, TransactionSearchParamsBuilder, PaginatedSearchParams}, RegularNode};
-///
-///     let node = RegularNode::new("https://bank.keysign.app");
-///
-///     let mut tx_query = TransactionSearchParamsBuilder::new();
-///
-///     let acc_to_search_for ="1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224"
-///     tx_query
-///         .fee(Some(NodeType::BANK))
-///         .limit(20)
-///         .offset(0)
-///         .account_number(acc_to_search_for);
-///     
-///     // This tx query says the node should look for the first 20 tx
-///     // fees sent to a bank node that was sent or recived by the
-///     // given account number
-///     
-///     let response = node.get_transactions(Some(&tx_query)).unwrap();
-///     println!("The total number of tcs after being filtered by the query: {}", response.count);
-///
-///     let txs = response.results;
-///     assert_eq!(txs.len(), 20);
-///
-/// ```
+/// - **account_number**: Searches for transactions that were sent or received by the given account
+/// - **recipient**: Searches for transactions recieved by the given account
+/// - **sender**:  Searches for transactions sent by the given account
+/// - **fee**: Searches for bank fees, primary validator fees or transactions with no fees
+/// - **balance_key**: Searches for a transaction that matches the given balance_key
+/// - **id**: Searches for a transaction that matches the given id
+/// - **ordering**: Orders the transactions according to one of the above fields
+/// - **limit**: The max number of transactions to retrieve. The limit can be set to any number between **1** and **100**
+/// - **offset**: The number of transactions to skip
 ///
 #[derive(Debug)]
-pub struct TransactionSearchParamsBuilder<'a> {
+pub struct TransactionQueryBuilder<'a> {
     params: SearchParams<'a>,
 }
 
-impl<'a> PaginatedSearchParams<'a> for TransactionSearchParamsBuilder<'a> {
+impl<'a> PaginatedQueryTrait<'a> for TransactionQueryBuilder<'a> {
     /// Mutable reference to the hashmap where the data is stored
     fn get_mut_params(&mut self) -> &mut SearchParams<'a> {
         &mut self.params
     }
 }
 
-impl<'a> TransactionSearchParamsBuilder<'a> {
+impl<'a> TransactionQueryBuilder<'a> {
     /// Initialize a new transaction query builder
     pub fn new() -> Self {
-        TransactionSearchParamsBuilder {
+        TransactionQueryBuilder {
             params: SearchParams::new(),
         }
     }
 
-    /// Returns a clone of the hasmap where all the search params are stored
+    /// Returns a clone of the hashmap where all the search params are stored
     pub fn get_params(&self) -> SearchParams<'a> {
         self.params.clone()
     }
@@ -191,7 +169,7 @@ impl<'a> TransactionSearchParamsBuilder<'a> {
 #[test]
 
 fn transaction_search_params() {
-    let mut tx_query = TransactionSearchParamsBuilder::new();
+    let mut tx_query = TransactionQueryBuilder::new();
 
     let acc1 = Account::new();
     let acc_num = acc1.account_number();

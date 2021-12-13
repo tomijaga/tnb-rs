@@ -168,15 +168,10 @@
 <span id="168">168</span>
 <span id="169">169</span>
 <span id="170">170</span>
-<span id="171">171</span>
-<span id="172">172</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::models::NodeType</span>;
-<span class="kw">use</span> <span class="ident">reqwest</span>::{<span class="ident">header::CONTENT_TYPE</span>, <span class="ident">Client</span>, <span class="ident">Response</span>};
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">de</span>, <span class="ident">Deserialize</span>};
 
-<span class="comment">// use crate::nodes::server_node::ServerNode;</span>
-<span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">bail</span>, <span class="ident">ensure</span>, <span class="prelude-ty">Result</span>};
-<span class="comment">// use url::Host;</span>
+<span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">bail</span>, <span class="prelude-ty">Result</span>};
 
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="doccomment">/// Block Response Data from a network node</span>
@@ -212,10 +207,10 @@
     <span class="doccomment">/// The amount of tnbc transfered in the transaction</span>
     <span class="kw">pub</span> <span class="ident">amount</span>: <span class="ident">u32</span>,
 
-    <span class="doccomment">/// The recipient&#39;s account Number</span>
+    <span class="doccomment">/// The recipient&#39;s account number</span>
     <span class="kw">pub</span> <span class="ident">recipient</span>: <span class="ident">String</span>,
 
-    <span class="doccomment">/// Indicates whether the transaction is a fee to a node or primary validator</span>
+    <span class="doccomment">/// Indicates whether the transaction is a fee of a node or primary validator</span>
     <span class="kw">pub</span> <span class="ident">fee</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">String</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// optional message that was added to the transaction</span>
@@ -270,7 +265,7 @@
     }
 }
 
-<span class="doccomment">/// Config for a node&#39;s selected primary validator</span>
+<span class="doccomment">/// The configuration details of a node&#39;s primary validator selection</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimaryValidatorConfigForNode</span> {
     <span class="doccomment">/// Account Number of the Primary Validator</span>
@@ -285,10 +280,10 @@
     <span class="doccomment">/// Url Port</span>
     <span class="kw">pub</span> <span class="ident">port</span>: <span class="ident">u16</span>,
 
-    <span class="doccomment">/// protocol</span>
+    <span class="doccomment">/// The communication protocol of the primary validator</span>
     <span class="kw">pub</span> <span class="ident">protocol</span>: <span class="ident">String</span>,
 
-    <span class="doccomment">/// Current version of the Primary Validator</span>
+    <span class="doccomment">/// Current version of the primary validator</span>
     <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">String</span>,
 
     <span class="doccomment">/// Transaction fee for processing transactions with this primary validator</span>
@@ -300,28 +295,29 @@
     <span class="doccomment">/// Hash</span>
     <span class="kw">pub</span> <span class="ident">root_account_file_hash</span>: <span class="ident">String</span>,
 
-    <span class="doccomment">/// ??</span>
+    <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="ident">seed_block_identifier</span>: <span class="ident">String</span>,
 
     <span class="doccomment">/// Fee for the primary validator&#39;s confirmation services</span>
     <span class="kw">pub</span> <span class="ident">daily_confirmation_rate</span>: <span class="ident">u64</span>,
 
-    <span class="doccomment">/// Level of trust this node gives to the primary validator</span>
+    <span class="doccomment">/// Level of trust a node gives to the primary validator</span>
     <span class="kw">pub</span> <span class="ident">trust</span>: <span class="ident">String</span>,
 }
 
-<span class="doccomment">/// Config Response for a Node</span>
+<span class="doccomment">/// The current configuration details of a node</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>)]</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">ConfigResponse</span> {
-    <span class="doccomment">/// The Config of the the Primary Validator selected by the Node</span>
+    <span class="doccomment">/// - The configuration details of this node&#39;s primary validator selection</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">/// &gt; The value of this field is `None` if the current node is the Primary Validator</span>
+    <span class="doccomment">/// - If the current node is the Primary Validator then the value of this field will be `None`</span>
+    <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="ident">primary_validator</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">PrimaryValidatorConfigForNode</span><span class="op">&gt;</span>,
 
     <span class="doccomment">/// Account Number of the Node</span>
     <span class="kw">pub</span> <span class="ident">account_number</span>: <span class="ident">String</span>,
 
-    <span class="doccomment">/// Ip Address to connect to the Node</span>
+    <span class="doccomment">/// Ip Address of the the Node</span>
     <span class="kw">pub</span> <span class="ident">ip_address</span>: <span class="ident">String</span>,
 
     <span class="doccomment">/// The unique Identifier for the node</span>
@@ -330,16 +326,16 @@
     <span class="doccomment">/// Url Port</span>
     <span class="kw">pub</span> <span class="ident">port</span>: <span class="ident">u16</span>,
 
-    <span class="doccomment">/// protocol</span>
+    <span class="doccomment">/// The communication protocol of the node</span>
     <span class="kw">pub</span> <span class="ident">protocol</span>: <span class="ident">String</span>,
 
     <span class="doccomment">/// Current Node version</span>
     <span class="kw">pub</span> <span class="ident">version</span>: <span class="ident">String</span>,
 
-    <span class="doccomment">/// Transaction fee for processing transactions with this node</span>
+    <span class="doccomment">/// Transaction fee for processing transactions through this node</span>
     <span class="kw">pub</span> <span class="ident">default_transaction_fee</span>: <span class="ident">u64</span>,
 
-    <span class="doccomment">/// The type of this node</span>
+    <span class="doccomment">/// The node type</span>
     <span class="kw">pub</span> <span class="ident">node_type</span>: <span class="ident">NodeType</span>,
 }
 </code></pre></div>

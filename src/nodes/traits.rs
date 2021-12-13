@@ -2,14 +2,11 @@ use crate::{
     nodes::server_node::ServerNode,
     responses::{AccountBalanceLockResponse, AccountBalanceResponse, ConfigResponse},
 };
-// use crate::nodes::server_node::ServerNode;
-// use anyhow::ensure;
 use reqwest::Result;
-// use url::Host;
 
-/// Trait for common methods across nodes
+/// A trait for implementing nodes using the server node as a base layer.
 pub trait ServerNodeTrait {
-    /// Retrives the base server so you can avoid implenting generic methods
+    /// Retrieves the base server so you can avoid implenting generic methods
     fn get_base(&self) -> &ServerNode;
 
     /// Get the config details of a node
@@ -21,7 +18,7 @@ pub trait ServerNodeTrait {
     }
 }
 
-/// Traits with the methods needed on all Validator Nodes
+///  A trait for implementing validator nodes using the server node as a base layer.
 pub trait ValidatorTrait: ServerNodeTrait {
     /// Retrieve the number of coins in an account
     fn get_account_balance<'a>(

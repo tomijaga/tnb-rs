@@ -153,6 +153,25 @@
 <span id="153">153</span>
 <span id="154">154</span>
 <span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
 </pre><pre class="rust"><code><span class="doccomment">//!</span>
 <span class="doccomment">//! This crate is a SDk for [thenewboston](https://thenewboston.com/) cryptocurrency network and it</span>
 <span class="doccomment">//! supports account generation, signing and signature verification</span>
@@ -264,7 +283,7 @@
 <span class="doccomment">//!     let bank_url = &quot;https://bank.keysign.app&quot;;</span>
 <span class="doccomment">//!     let mut wallet = Wallet::new(&amp;acc, bank_url);</span>
 <span class="doccomment">//!     </span>
-<span class="doccomment">//!     // gets the fees necessary to send a transaction</span>
+<span class="doccomment">//!     // gets the details necessary to send a transaction</span>
 <span class="doccomment">//!     wallet.init();</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let recipient = &quot;1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224&quot;;</span>
@@ -280,9 +299,27 @@
 <span class="doccomment">//!     wallet.send_transactions(&amp;txs);</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! # Nodes</span>
+<span class="doccomment">//! - Connect directly to the network nodes</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!     use tnb_rs::nodes::{RegularNode, PrimaryValidator, ConfirmationValidator};</span>
+<span class="doccomment">//!     </span>
+<span class="doccomment">//!     let cv = ConfirmationValidator::new(&quot;http://54.241.48.170&quot;);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     let node = RegularNode::new(&quot;https://bank.keysign.app&quot;);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     let pv = PrimaryValidator::new(&quot;http://52.52.160.149&quot;);</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     // or</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!     let pv: PrimaryValidator = node.get_pv().unwrap();</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//! ```</span>
+<span class="doccomment">//!</span>
 
 <span class="attribute">#![<span class="ident">warn</span>(<span class="ident">future_incompatible</span>)]</span>
-<span class="attribute">#![<span class="ident">warn</span>(<span class="ident">missing_docs</span>)]</span> <span class="comment">// refuse to compile if documentation is missing</span>
+<span class="attribute">#![<span class="ident">deny</span>(<span class="ident">missing_docs</span>)]</span> <span class="comment">// refuse to compile if documentation is missing</span>
 <span class="attribute">#![<span class="ident">cfg_attr</span>(<span class="ident">not</span>(<span class="ident">test</span>), <span class="ident">forbid</span>(<span class="ident">unsafe_code</span>))]</span>
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">any</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>, <span class="ident">test</span>))]</span>
@@ -292,20 +329,21 @@
 <span class="kw">mod</span> <span class="ident">account</span>;
 <span class="kw">mod</span> <span class="ident">client</span>;
 <span class="kw">mod</span> <span class="ident">hd_wallet</span>;
-<span class="kw">mod</span> <span class="ident">node_client</span>;
-<span class="kw">mod</span> <span class="ident">nodes</span>;
 <span class="kw">mod</span> <span class="ident">utils</span>;
 <span class="kw">mod</span> <span class="ident">wallet</span>;
 
 <span class="doccomment">/// Data Types for making on-chain requests</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">models</span>;
+
+<span class="doccomment">/// Different nodes on the network</span>
+<span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">nodes</span>;
+
 <span class="doccomment">/// Module with the response of every node&#39;s endpoints</span>
 <span class="kw">pub</span> <span class="kw">mod</span> <span class="ident">responses</span>;
 
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::account::Account</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::hd_wallet</span>::{<span class="ident">HDWallet</span>, <span class="ident">MAX_CHILD_INDEX</span>};
 <span class="comment">// pub use models::*;</span>
-<span class="kw">pub</span> <span class="kw">use</span> <span class="ident">nodes</span>::<span class="kw-2">*</span>;
 <span class="kw">pub</span> <span class="kw">use</span> <span class="ident">wallet</span>::<span class="kw-2">*</span>;
 <span class="comment">// pub use responses::*;</span>
 </code></pre></div>

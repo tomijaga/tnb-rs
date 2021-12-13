@@ -1,10 +1,7 @@
 use crate::models::NodeType;
-use reqwest::{header::CONTENT_TYPE, Client, Response};
 use serde::{de, Deserialize};
 
-// use crate::nodes::server_node::ServerNode;
-use anyhow::{bail, ensure, Result};
-// use url::Host;
+use anyhow::{bail, Result};
 
 #[derive(Debug, Deserialize)]
 /// Block Response Data from a network node
@@ -40,10 +37,10 @@ pub struct TransactionResponse {
     /// The amount of tnbc transfered in the transaction
     pub amount: u32,
 
-    /// The recipient's account Number
+    /// The recipient's account number
     pub recipient: String,
 
-    /// Indicates whether the transaction is a fee to a node or primary validator
+    /// Indicates whether the transaction is a fee of a node or primary validator
     pub fee: Option<String>,
 
     /// optional message that was added to the transaction
@@ -98,7 +95,7 @@ where
     }
 }
 
-/// Config for a node's selected primary validator
+/// The configuration details of a node's primary validator selection
 #[derive(Debug, Deserialize)]
 pub struct PrimaryValidatorConfigForNode {
     /// Account Number of the Primary Validator
@@ -113,10 +110,10 @@ pub struct PrimaryValidatorConfigForNode {
     /// Url Port
     pub port: u16,
 
-    /// protocol
+    /// The communication protocol of the primary validator
     pub protocol: String,
 
-    /// Current version of the Primary Validator
+    /// Current version of the primary validator
     pub version: String,
 
     /// Transaction fee for processing transactions with this primary validator
@@ -128,28 +125,29 @@ pub struct PrimaryValidatorConfigForNode {
     /// Hash
     pub root_account_file_hash: String,
 
-    /// ??
+    ///
     pub seed_block_identifier: String,
 
     /// Fee for the primary validator's confirmation services
     pub daily_confirmation_rate: u64,
 
-    /// Level of trust this node gives to the primary validator
+    /// Level of trust a node gives to the primary validator
     pub trust: String,
 }
 
-/// Config Response for a Node
+/// The current configuration details of a node
 #[derive(Debug, Deserialize)]
 pub struct ConfigResponse {
-    /// The Config of the the Primary Validator selected by the Node
+    /// - The configuration details of this node's primary validator selection
     ///
-    /// > The value of this field is `None` if the current node is the Primary Validator
+    /// - If the current node is the Primary Validator then the value of this field will be `None`
+    ///
     pub primary_validator: Option<PrimaryValidatorConfigForNode>,
 
     /// Account Number of the Node
     pub account_number: String,
 
-    /// Ip Address to connect to the Node
+    /// Ip Address of the the Node
     pub ip_address: String,
 
     /// The unique Identifier for the node
@@ -158,15 +156,15 @@ pub struct ConfigResponse {
     /// Url Port
     pub port: u16,
 
-    /// protocol
+    /// The communication protocol of the node
     pub protocol: String,
 
     /// Current Node version
     pub version: String,
 
-    /// Transaction fee for processing transactions with this node
+    /// Transaction fee for processing transactions through this node
     pub default_transaction_fee: u64,
 
-    /// The type of this node
+    /// The node type
     pub node_type: NodeType,
 }

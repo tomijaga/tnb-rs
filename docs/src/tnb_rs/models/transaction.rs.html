@@ -205,34 +205,11 @@
 <span id="205">205</span>
 <span id="206">206</span>
 <span id="207">207</span>
-<span id="208">208</span>
-<span id="209">209</span>
-<span id="210">210</span>
-<span id="211">211</span>
-<span id="212">212</span>
-<span id="213">213</span>
-<span id="214">214</span>
-<span id="215">215</span>
-<span id="216">216</span>
-<span id="217">217</span>
-<span id="218">218</span>
-<span id="219">219</span>
-<span id="220">220</span>
-<span id="221">221</span>
-<span id="222">222</span>
-<span id="223">223</span>
-<span id="224">224</span>
-<span id="225">225</span>
-<span id="226">226</span>
-<span id="227">227</span>
-<span id="228">228</span>
-<span id="229">229</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">account::Account</span>,
-    <span class="ident">models</span>::{<span class="ident">PaginatedSearchParams</span>, <span class="ident">SearchParams</span>},
+    <span class="ident">models</span>::{<span class="ident">PaginatedQueryTrait</span>, <span class="ident">SearchParams</span>},
 };
 <span class="kw">use</span> <span class="ident">serde</span>::{<span class="ident">Deserialize</span>, <span class="ident">Serialize</span>};
-<span class="kw">use</span> <span class="ident">std::collections::HashMap</span>;
 
 <span class="doccomment">/// Enum that specifies a Node&#39;s type</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">Deserialize</span>, <span class="ident">Serialize</span>, <span class="ident">Eq</span>, <span class="ident">Ord</span>, <span class="ident">PartialEq</span>, <span class="ident">PartialOrd</span>, <span class="ident">Clone</span>)]</span>
@@ -305,58 +282,37 @@
 <span class="doccomment">/// Query Builder for a get transactions network request</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// # Field</span>
-<span class="doccomment">/// - **account_number**:</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// # Example</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```no_run</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///     use tnb_rs::{models::{NodeType, TransactionSearchParamsBuilder, PaginatedSearchParams}, RegularNode};</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///     let node = RegularNode::new(&quot;https://bank.keysign.app&quot;);</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///     let mut tx_query = TransactionSearchParamsBuilder::new();</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///     let acc_to_search_for =&quot;1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224&quot;</span>
-<span class="doccomment">///     tx_query</span>
-<span class="doccomment">///         .fee(Some(NodeType::BANK))</span>
-<span class="doccomment">///         .limit(20)</span>
-<span class="doccomment">///         .offset(0)</span>
-<span class="doccomment">///         .account_number(acc_to_search_for);</span>
-<span class="doccomment">///     </span>
-<span class="doccomment">///     // This tx query says the node should look for the first 20 tx</span>
-<span class="doccomment">///     // fees sent to a bank node that was sent or recived by the</span>
-<span class="doccomment">///     // given account number</span>
-<span class="doccomment">///     </span>
-<span class="doccomment">///     let response = node.get_transactions(Some(&amp;tx_query)).unwrap();</span>
-<span class="doccomment">///     println!(&quot;The total number of tcs after being filtered by the query: {}&quot;, response.count);</span>
-<span class="doccomment">///</span>
-<span class="doccomment">///     let txs = response.results;</span>
-<span class="doccomment">///     assert_eq!(txs.len(), 20);</span>
-<span class="doccomment">///</span>
-<span class="doccomment">/// ```</span>
+<span class="doccomment">/// - **account_number**: Searches for transactions that were sent or received by the given account</span>
+<span class="doccomment">/// - **recipient**: Searches for transactions recieved by the given account</span>
+<span class="doccomment">/// - **sender**:  Searches for transactions sent by the given account</span>
+<span class="doccomment">/// - **fee**: Searches for bank fees, primary validator fees or transactions with no fees</span>
+<span class="doccomment">/// - **balance_key**: Searches for a transaction that matches the given balance_key</span>
+<span class="doccomment">/// - **id**: Searches for a transaction that matches the given id</span>
+<span class="doccomment">/// - **ordering**: Orders the transactions according to one of the above fields</span>
+<span class="doccomment">/// - **limit**: The max number of transactions to retrieve. The limit can be set to any number between **1** and **100**</span>
+<span class="doccomment">/// - **offset**: The number of transactions to skip</span>
 <span class="doccomment">///</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TransactionSearchParamsBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">TransactionQueryBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="ident">params</span>: <span class="ident">SearchParams</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PaginatedSearchParams</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TransactionSearchParamsBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PaginatedQueryTrait</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">TransactionQueryBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Mutable reference to the hashmap where the data is stored</span>
     <span class="kw">fn</span> <span class="ident">get_mut_params</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">SearchParams</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">params</span>
     }
 }
 
-<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TransactionSearchParamsBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">TransactionQueryBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Initialize a new transaction query builder</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
-        <span class="ident">TransactionSearchParamsBuilder</span> {
+        <span class="ident">TransactionQueryBuilder</span> {
             <span class="ident">params</span>: <span class="ident">SearchParams::new</span>(),
         }
     }
 
-    <span class="doccomment">/// Returns a clone of the hasmap where all the search params are stored</span>
+    <span class="doccomment">/// Returns a clone of the hashmap where all the search params are stored</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_params</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">SearchParams</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">params</span>.<span class="ident">clone</span>()
     }
@@ -420,7 +376,7 @@
 <span class="attribute">#[<span class="ident">test</span>]</span>
 
 <span class="kw">fn</span> <span class="ident">transaction_search_params</span>() {
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tx_query</span> <span class="op">=</span> <span class="ident">TransactionSearchParamsBuilder::new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tx_query</span> <span class="op">=</span> <span class="ident">TransactionQueryBuilder::new</span>();
 
     <span class="kw">let</span> <span class="ident">acc1</span> <span class="op">=</span> <span class="ident">Account::new</span>();
     <span class="kw">let</span> <span class="ident">acc_num</span> <span class="op">=</span> <span class="ident">acc1</span>.<span class="ident">account_number</span>();

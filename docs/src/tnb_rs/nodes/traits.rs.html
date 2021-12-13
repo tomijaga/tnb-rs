@@ -40,21 +40,15 @@
 <span id="40">40</span>
 <span id="41">41</span>
 <span id="42">42</span>
-<span id="43">43</span>
-<span id="44">44</span>
-<span id="45">45</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">nodes::server_node::ServerNode</span>,
     <span class="ident">responses</span>::{<span class="ident">AccountBalanceLockResponse</span>, <span class="ident">AccountBalanceResponse</span>, <span class="ident">ConfigResponse</span>},
 };
-<span class="comment">// use crate::nodes::server_node::ServerNode;</span>
-<span class="comment">// use anyhow::ensure;</span>
 <span class="kw">use</span> <span class="ident">reqwest::Result</span>;
-<span class="comment">// use url::Host;</span>
 
-<span class="doccomment">/// Trait for common methods across nodes</span>
+<span class="doccomment">/// A trait for implementing nodes using the server node as a base layer.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ServerNodeTrait</span> {
-    <span class="doccomment">/// Retrives the base server so you can avoid implenting generic methods</span>
+    <span class="doccomment">/// Retrieves the base server so you can avoid implenting generic methods</span>
     <span class="kw">fn</span> <span class="ident">get_base</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="kw-2">&amp;</span><span class="ident">ServerNode</span>;
 
     <span class="doccomment">/// Get the config details of a node</span>
@@ -66,7 +60,7 @@
     }
 }
 
-<span class="doccomment">/// Traits with the methods needed on all Validator Nodes</span>
+<span class="doccomment">///  A trait for implementing validator nodes using the server node as a base layer.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">ValidatorTrait</span>: <span class="ident">ServerNodeTrait</span> {
     <span class="doccomment">/// Retrieve the number of coins in an account</span>
     <span class="kw">fn</span> <span class="ident">get_account_balance</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(

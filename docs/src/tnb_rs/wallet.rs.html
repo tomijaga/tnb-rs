@@ -133,16 +133,7 @@
 <span id="133">133</span>
 <span id="134">134</span>
 <span id="135">135</span>
-<span id="136">136</span>
-<span id="137">137</span>
-<span id="138">138</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">account::Account</span>,
-    <span class="ident">client::Client</span>,
-    <span class="ident">models</span>::{<span class="ident">Transaction</span>, <span class="ident">TransactionSearchParamsBuilder</span>},
-    <span class="ident">nodes</span>::{<span class="ident">RegularNode</span>, <span class="ident">ServerNodeTrait</span>},
-    <span class="ident">responses::BlockResponse</span>,
-};
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">account::Account</span>, <span class="ident">client::Client</span>, <span class="ident">models::Transaction</span>, <span class="ident">responses::BlockResponse</span>};
 
 <span class="kw">use</span> <span class="ident">anyhow::Result</span> <span class="kw">as</span> <span class="ident">AnyResult</span>;
 <span class="kw">use</span> <span class="ident">reqwest::Result</span>;
@@ -168,6 +159,7 @@
     <span class="doccomment">///</span>
     <span class="doccomment">///     let mut wallet = Wallet::new(&amp;acc, bank_url);</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">///     // This method retrieves the nodes transaction fee details</span>
     <span class="doccomment">///     wallet.init();</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
@@ -197,6 +189,8 @@
     <span class="doccomment">///</span>
     <span class="doccomment">///     let mut wallet = Wallet::new(&amp;acc, bank_url);</span>
     <span class="doccomment">///</span>
+    <span class="doccomment">///     // This method retrieves the nodes transaction fee details</span>
+    <span class="doccomment">///     // It is important you call this method before sending a transaction</span>
     <span class="doccomment">///     wallet.init();</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     let recipient = &quot;1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224&quot;;</span>
@@ -253,12 +247,12 @@
             .<span class="ident">get_account_balance</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">account</span>.<span class="ident">account_number</span>())
     }
 
-    <span class="doccomment">/// Switch to a different node to process transaction</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">switch_node</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">node_url</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">client</span>.<span class="ident">node</span> <span class="op">=</span> <span class="ident">RegularNode::new</span>(<span class="ident">node_url</span>);
-        <span class="self">self</span>.<span class="ident">init</span>();
-        <span class="prelude-val">Ok</span>(())
-    }
+    <span class="comment">// /// Switch to a different node to process transaction</span>
+    <span class="comment">// pub fn switch_node&lt;&#39;a&gt;(&amp;&#39;a mut self, node_url: &amp;&#39;a str) -&gt; Result&lt;()&gt; {</span>
+    <span class="comment">//     self.client.node = RegularNode::new(node_url);</span>
+    <span class="comment">//     self.init();</span>
+    <span class="comment">//     Ok(())</span>
+    <span class="comment">// }</span>
 }
 
 <span class="attribute">#[<span class="ident">test</span>]</span>

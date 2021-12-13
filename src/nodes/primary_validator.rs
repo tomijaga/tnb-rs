@@ -7,13 +7,12 @@ use crate::{
 };
 
 use reqwest::Result;
-// use url::Host;
 
 /// Primary Validator
 #[derive(Debug)]
 pub struct PrimaryValidator {
     /// base server
-    pub base: ServerNode,
+    base: ServerNode,
 }
 
 #[allow(dead_code)]
@@ -26,6 +25,14 @@ impl ServerNodeTrait for PrimaryValidator {
 impl ValidatorTrait for PrimaryValidator {}
 
 impl PrimaryValidator {
+    /// Create a new primary validator instance
+    ///
+    /// ```
+    ///     use tnb_rs::{nodes::PrimaryValidator};
+    ///
+    ///     let pv = PrimaryValidator::new("http://52.52.160.149");
+    ///
+    /// ```
     pub fn new(url: &str) -> Self {
         PrimaryValidator {
             base: ServerNode::new(url),

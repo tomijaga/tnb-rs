@@ -125,18 +125,16 @@ fn create_block_message() {
     let block_data = BlockType::coin_transfer(balance_key, txs);
     let block_message = acc.create_block_message(&block_data);
 
-    let serialized_data = serde_json::to_string(&block_message).unwrap();
+    let serialized_data = serde_json::to_string(&block_data).unwrap();
 
     println!("block_message: {:?}\n\n", block_message);
-    let correct_signature= "f544613ad5b6112c85562db0b441827f33e93df58df2c727b0e9695cfcd39b69fd93b4d7e730015f8824e465b430be7e3b273efe427dbafb94972f12e527e30f";
-    assert_eq!(&block_message.signature, correct_signature);
 
-    // assert_eq!(
-    //     Account::verify_signature(
-    //         &block_message.signature,
-    //         &serialized_data,
-    //         acc.account_number()
-    //     ),
-    //     true
-    // );
+    assert_eq!(
+        Account::verify_signature(
+            &block_message.signature,
+            &serialized_data,
+            acc.account_number()
+        ),
+        true
+    );
 }

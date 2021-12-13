@@ -3,7 +3,6 @@ mod primary_validator;
 mod regular_node;
 mod server_node;
 mod traits;
-mod validator;
 
 pub use confirmation_validator::*;
 pub use primary_validator::*;

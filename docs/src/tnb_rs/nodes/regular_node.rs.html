@@ -171,30 +171,62 @@
 <span id="171">171</span>
 <span id="172">172</span>
 <span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
+<span id="200">200</span>
+<span id="201">201</span>
+<span id="202">202</span>
+<span id="203">203</span>
+<span id="204">204</span>
+<span id="205">205</span>
+<span id="206">206</span>
+<span id="207">207</span>
+<span id="208">208</span>
+<span id="209">209</span>
+<span id="210">210</span>
+<span id="211">211</span>
+<span id="212">212</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::account::Account</span>;
 <span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::nodes::server_node::ServerNode</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">models</span>::{
-        <span class="ident">BlockMessage</span>, <span class="ident">BlockType</span>, <span class="ident">NodeType</span>, <span class="ident">PaginatedSearchParams</span>, <span class="ident">TransactionSearchParamsBuilder</span>,
-    },
+    <span class="ident">models</span>::{<span class="ident">BlockMessage</span>, <span class="ident">BlockType</span>, <span class="ident">NodeType</span>, <span class="ident">PaginatedQueryTrait</span>, <span class="ident">TransactionQueryBuilder</span>},
     <span class="ident">nodes</span>::{<span class="ident">primary_validator::PrimaryValidator</span>, <span class="ident">traits::ServerNodeTrait</span>},
     <span class="ident">responses</span>::{
-        <span class="ident">BlockResponse</span>, <span class="ident">ConfigResponse</span>, <span class="ident">PaginatedResponse</span>, <span class="ident">PrimaryValidatorConfigForNode</span>,
-        <span class="ident">TransactionResponse</span>,
+        <span class="ident">BlockResponse</span>, <span class="ident">PaginatedResponse</span>, <span class="ident">PrimaryValidatorConfigForNode</span>, <span class="ident">TransactionResponse</span>,
     },
     <span class="ident">utils::format_node_url</span>,
 };
 
-<span class="comment">// use anyhow::ensure;</span>
 <span class="kw">use</span> <span class="ident">reqwest::Result</span>;
-<span class="kw">use</span> <span class="ident">url::Url</span>;
-<span class="comment">// use serde::Deserialize;</span>
-<span class="comment">// use url::Host;</span>
 
 <span class="doccomment">/// A regular node that retrieves chain data and forwards blocks to the primary validator</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">RegularNode</span> {
     <span class="doccomment">/// base server implementation</span>
-    <span class="kw">pub</span> <span class="ident">base</span>: <span class="ident">ServerNode</span>,
+    <span class="ident">base</span>: <span class="ident">ServerNode</span>,
 }
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
@@ -206,12 +238,90 @@
 
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">dead_code</span>)]</span>
 <span class="kw">impl</span> <span class="ident">RegularNode</span> {
-    <span class="doccomment">/// Create a struct that connects to a regular node&#39;s url</span>
+    <span class="doccomment">/// Create a new instance that connects to a regular node&#39;s url</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///     </span>
+    <span class="doccomment">/// use tnb_rs::{nodes::RegularNode};</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// let node_url = &quot;https://bank.keysign.app&quot;;</span>
+    <span class="doccomment">/// let node = RegularNode::new(node_url);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">url</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">RegularNode</span> {
             <span class="ident">base</span>: <span class="ident">ServerNode::new</span>(<span class="ident">url</span>),
         }
     }
+
+    <span class="doccomment">/// Get transactions on the network</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Inputs</span>
+    <span class="doccomment">/// - **query**: Optional search parameters to sort and filter transactions</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```no_run</span>
+    <span class="doccomment">///     use tnb_rs::nodes::RegularNode;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let node = RegularNode::new(&quot;https://bank.keysign.app&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let response = node.get_transactions(None).unwrap();</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     println!(&quot;All Transactions in the network: {}&quot;, response.count);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let txs = response.results;</span>
+    <span class="doccomment">///     println!(&quot;Transactions : {:?}&quot;, txs);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     assert!(txs.len() &lt;= 50);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// # Example with a transaction query</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```no_run</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     use tnb_rs::{</span>
+    <span class="doccomment">///         models::{NodeType, TransactionQueryBuilder, PaginatedQueryTrait},</span>
+    <span class="doccomment">///         nodes::RegularNode</span>
+    <span class="doccomment">///     };</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let node = RegularNode::new(&quot;https://bank.keysign.app&quot;);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let mut tx_query = TransactionQueryBuilder::new();</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let acc_to_search_for =&quot;1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224&quot;;</span>
+    <span class="doccomment">///     tx_query</span>
+    <span class="doccomment">///         .fee(Some(NodeType::BANK))</span>
+    <span class="doccomment">///         .limit(20)</span>
+    <span class="doccomment">///         .offset(0)</span>
+    <span class="doccomment">///         .account_number(acc_to_search_for);</span>
+    <span class="doccomment">///     </span>
+    <span class="doccomment">///     // This tx query says the node should look for the first 20 tx</span>
+    <span class="doccomment">///     // fees paid to a bank node from or to the</span>
+    <span class="doccomment">///     // given account number</span>
+    <span class="doccomment">///     </span>
+    <span class="doccomment">///     let response = node.get_transactions(Some(&amp;tx_query)).unwrap();</span>
+    <span class="doccomment">///     println!(&quot;The total number of txs after being filtered by the query: {}&quot;, response.count);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     let txs = response.results;</span>
+    <span class="doccomment">///     assert!(txs.len() &lt;= 20);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// ```</span>
+    <span class="doccomment">///</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_transactions</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
+        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
+        <span class="ident">query</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TransactionQueryBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
+    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PaginatedResponse</span><span class="op">&lt;</span><span class="ident">TransactionResponse</span><span class="op">&gt;</span><span class="op">&gt;</span> {
+        <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">get_data</span>(
+            <span class="string">&quot;/bank_transactions&quot;</span>,
+            <span class="kw">match</span> <span class="ident">query</span> {
+                <span class="prelude-val">Some</span>(<span class="ident">q</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">q</span>.<span class="ident">get_params</span>()),
+                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
+            },
+        )
+    }
+
     <span class="doccomment">/// Retrieve this banks primary validator</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_pv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PrimaryValidator</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="ident">config</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">get_config</span>().<span class="ident">unwrap</span>();
@@ -235,38 +345,6 @@
         <span class="kw">let</span> <span class="ident">block_message</span> <span class="op">=</span> <span class="ident">account</span>.<span class="ident">create_block_message</span>(<span class="ident">block_data</span>);
         <span class="self">self</span>.<span class="ident">base</span>
             .<span class="ident">post_data</span>::<span class="op">&lt;</span><span class="ident">BlockMessage</span>, <span class="ident">BlockResponse</span><span class="op">&gt;</span>(<span class="string">&quot;/blocks&quot;</span>, <span class="kw-2">&amp;</span><span class="ident">block_message</span>)
-    }
-
-    <span class="doccomment">/// Get transactions on the network</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Inputs</span>
-    <span class="doccomment">/// - **query**: Optional search parameters to sort and filter transactions</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">///     use tnb_rs::RegularNode;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     let node = RegularNode::new(&quot;https://bank.keysign.app&quot;);</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     let response = node.get_transactions(None).unwrap();</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     println!(&quot;All Transactions in the network: {}&quot;, response.count);</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     let txs = response.results;</span>
-    <span class="doccomment">///     println!(&quot;Transactions received: {}&quot;, txs.len())</span>
-    <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get_transactions</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>(
-        <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="self">self</span>,
-        <span class="ident">query</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">TransactionSearchParamsBuilder</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span><span class="op">&gt;</span>,
-    ) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">PaginatedResponse</span><span class="op">&lt;</span><span class="ident">TransactionResponse</span><span class="op">&gt;</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">base</span>.<span class="ident">get_data</span>(
-            <span class="string">&quot;/bank_transactions&quot;</span>,
-            <span class="kw">match</span> <span class="ident">query</span> {
-                <span class="prelude-val">Some</span>(<span class="ident">q</span>) <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">Some</span>(<span class="ident">q</span>.<span class="ident">get_params</span>()),
-                <span class="kw">_</span> <span class="op">=</span><span class="op">&gt;</span> <span class="prelude-val">None</span>,
-            },
-        )
     }
 }
 
@@ -305,7 +383,7 @@
 <span class="kw">fn</span> <span class="ident">test_next_paginated_data</span>() {
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">RegularNode::new</span>(<span class="string">&quot;https://bank.keysign.app&quot;</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tx_query</span> <span class="op">=</span> <span class="ident">TransactionSearchParamsBuilder::new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tx_query</span> <span class="op">=</span> <span class="ident">TransactionQueryBuilder::new</span>();
 
     <span class="ident">tx_query</span>.<span class="ident">limit</span>(<span class="number">5</span>).<span class="ident">offset</span>(<span class="number">100</span>);
 
@@ -327,7 +405,7 @@
 <span class="kw">fn</span> <span class="ident">get_bank_fees</span>() {
     <span class="kw">let</span> <span class="ident">node</span> <span class="op">=</span> <span class="ident">RegularNode::new</span>(<span class="string">&quot;https://bank.keysign.app&quot;</span>);
 
-    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tx_query</span> <span class="op">=</span> <span class="ident">TransactionSearchParamsBuilder::new</span>();
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">tx_query</span> <span class="op">=</span> <span class="ident">TransactionQueryBuilder::new</span>();
     <span class="ident">tx_query</span>.<span class="ident">fee</span>(<span class="prelude-val">Some</span>(<span class="ident">NodeType::BANK</span>));
 
     <span class="kw">let</span> <span class="ident">response</span> <span class="op">=</span> <span class="ident">node</span>.<span class="ident">get_transactions</span>(<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="ident">tx_query</span>)).<span class="ident">unwrap</span>();

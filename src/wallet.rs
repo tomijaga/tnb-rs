@@ -1,10 +1,4 @@
-use crate::{
-    account::Account,
-    client::Client,
-    models::{Transaction, TransactionSearchParamsBuilder},
-    nodes::{RegularNode, ServerNodeTrait},
-    responses::BlockResponse,
-};
+use crate::{account::Account, client::Client, models::Transaction, responses::BlockResponse};
 
 use anyhow::Result as AnyResult;
 use reqwest::Result;
@@ -30,6 +24,7 @@ impl Wallet<'_> {
     ///
     ///     let mut wallet = Wallet::new(&acc, bank_url);
     ///
+    ///     // This method retrieves the nodes transaction fee details
     ///     wallet.init();
     ///
     /// ```
@@ -59,6 +54,8 @@ impl Wallet<'_> {
     ///
     ///     let mut wallet = Wallet::new(&acc, bank_url);
     ///
+    ///     // This method retrieves the nodes transaction fee details
+    ///     // It is important you call this method before sending a transaction
     ///     wallet.init();
     ///
     ///     let recipient = "1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224";
@@ -115,12 +112,12 @@ impl Wallet<'_> {
             .get_account_balance(&self.account.account_number())
     }
 
-    /// Switch to a different node to process transaction
-    pub fn switch_node<'a>(&'a mut self, node_url: &'a str) -> Result<()> {
-        self.client.node = RegularNode::new(node_url);
-        self.init();
-        Ok(())
-    }
+    // /// Switch to a different node to process transaction
+    // pub fn switch_node<'a>(&'a mut self, node_url: &'a str) -> Result<()> {
+    //     self.client.node = RegularNode::new(node_url);
+    //     self.init();
+    //     Ok(())
+    // }
 }
 
 #[test]

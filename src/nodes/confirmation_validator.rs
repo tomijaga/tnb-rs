@@ -8,13 +8,12 @@ use crate::{
 };
 
 use reqwest::Result;
-// use url::Host;
 
 /// Confirmation Validator
 #[derive(Debug)]
 pub struct ConfirmationValidator {
     /// base server
-    pub base: ServerNode,
+    base: ServerNode,
 }
 
 #[allow(dead_code)]
@@ -27,6 +26,14 @@ impl ServerNodeTrait for ConfirmationValidator {
 impl ValidatorTrait for ConfirmationValidator {}
 
 impl ConfirmationValidator {
+    /// Create a new confirmation validator instance
+    ///
+    /// ```
+    ///     use tnb_rs::{nodes::ConfirmationValidator};
+    ///
+    ///     let cv = ConfirmationValidator::new("http://54.241.48.170");
+    ///
+    /// ```
     pub fn new(url: &str) -> Self {
         ConfirmationValidator {
             base: ServerNode::new(url),

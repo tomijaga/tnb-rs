@@ -7,10 +7,7 @@ use crate::{
     },
 };
 
-use crate::{
-    nodes::{PrimaryValidator, RegularNode},
-    responses::PrimaryValidatorConfigForNode,
-};
+use crate::nodes::{PrimaryValidator, RegularNode};
 
 use anyhow::{bail, Result as AnyResult};
 use reqwest::Result;

@@ -1,13 +1,10 @@
-use reqwest::{header::CONTENT_TYPE, Client, Response, Result};
-use serde::{de, Deserialize, Serialize};
-// use std::any::Any;
-use std::collections::HashMap;
+use reqwest::{header::CONTENT_TYPE, Client, Result};
+use serde::{de, Serialize};
 use url::{Origin, Url};
 
 use crate::{
     models::{NodeType, SearchParams},
-    nodes::ServerNodeTrait,
-    responses::{BlockResponse, ConfigResponse, PaginatedResponse, TransactionResponse},
+    responses::{ConfigResponse, PaginatedResponse, TransactionResponse},
 };
 
 /// Base Api for a node
@@ -64,32 +61,6 @@ impl ServerNode {
         Ok(response.json::<T>().await?)
     }
 
-    /// its unsafe
-    #[tokio::main]
-    pub async fn unsafe_post_data<D: Serialize, T: de::DeserializeOwned>(
-        &self,
-        endpoint: &str,
-        data: &D,
-    ) -> Result<String> {
-        let url_endpoint = format!("{}{}", self.url, endpoint);
-
-        let client = Client::new();
-
-        println!("json data: {:?}", serde_json::to_string(data).unwrap());
-
-        let response = client
-            .post(url_endpoint)
-            .header(CONTENT_TYPE, "application/json")
-            .json(&data)
-            // .body(serde_json::to_string(data).unwrap())
-            .send()
-            .await?;
-
-        println!("\npost response: {:?}, text: ", response.status(),);
-
-        Ok(response.text().await?)
-    }
-
     /// Patch request to the Node's Server
     #[tokio::main]
     pub async fn patch_data<D: Serialize, T: de::DeserializeOwned>(
@@ -111,7 +82,7 @@ impl ServerNode {
 }
 
 impl ServerNode {
-    /// Iniatialize new Node
+    /// Initialize a new server node
     pub fn new(url: &str) -> Self {
         let parsed_url = Url::parse(url).unwrap();
 
@@ -164,25 +135,3 @@ fn get_server_node_config() {
     assert_eq!(config.account_number.len(), 64);
     assert_eq!(config.node_identifier.len(), 64);
 }
-
-// #[test]
-// fn server_post_request() {
-//     let acc = Account::new();
-//     let node = ServerNode::new("https://postman-echo.com/post", None);
-
-//     let block_data = BlockType::CoinTransfer {
-//         balance_key: acc.account_number().to_string(),
-//         txs: vec![],
-//     };
-
-//     let block_message = acc.create_block_message(&block_data);
-//     let response = node
-//         .post_data::<String, String>(
-//             "/post",
-//             &"This is expected to be sent back as part of response body.".to_string(),
-//         )
-//         .unwrap();
-
-//     println!("{:?}", response);
-//     // assert_eq!(response, acc.account_number());
-// }
