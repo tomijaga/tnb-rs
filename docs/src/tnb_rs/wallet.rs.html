@@ -133,6 +133,10 @@
 <span id="133">133</span>
 <span id="134">134</span>
 <span id="135">135</span>
+<span id="136">136</span>
+<span id="137">137</span>
+<span id="138">138</span>
+<span id="139">139</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{<span class="ident">account::Account</span>, <span class="ident">client::Client</span>, <span class="ident">models::Transaction</span>, <span class="ident">responses::BlockResponse</span>};
 
 <span class="kw">use</span> <span class="ident">anyhow::Result</span> <span class="kw">as</span> <span class="ident">AnyResult</span>;
@@ -196,7 +200,9 @@
     <span class="doccomment">///     let recipient = &quot;1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224&quot;;</span>
     <span class="doccomment">///     let tx = Transaction::new(recipient, 1000);</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///     wallet.send_transaction(&amp;tx);</span>
+    <span class="doccomment">///     let block = wallet.send_transaction(&amp;tx).unwrap();</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     println!(&quot;block response: {:?}&quot;, block);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>
@@ -233,7 +239,9 @@
     <span class="doccomment">///</span>
     <span class="doccomment">///     let txs = vec![tx1, tx2, tx3];</span>
     <span class="doccomment">///</span>
-    <span class="doccomment">///     wallet.send_transactions(&amp;txs);</span>
+    <span class="doccomment">///     let block = wallet.send_transactions(&amp;txs);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     println!(&quot;block response: {:?}&quot;, block);</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
     <span class="doccomment">///</span>

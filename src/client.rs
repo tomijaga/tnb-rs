@@ -1,13 +1,11 @@
 use crate::{
     account::Account,
     models::{BlockType, NodeType, Transaction},
-    nodes::{ServerNodeTrait, ValidatorTrait},
+    nodes::{PrimaryValidator, RegularNode, ServerNodeTrait, ValidatorTrait},
     responses::{
         AccountBalanceLockResponse, AccountBalanceResponse, BlockResponse, ConfigResponse,
     },
 };
-
-use crate::nodes::{PrimaryValidator, RegularNode};
 
 use anyhow::{bail, Result as AnyResult};
 use reqwest::Result;

@@ -175,18 +175,14 @@
 <span id="175">175</span>
 <span id="176">176</span>
 <span id="177">177</span>
-<span id="178">178</span>
-<span id="179">179</span>
 </pre><pre class="rust"><code><span class="kw">use</span> <span class="kw">crate</span>::{
     <span class="ident">account::Account</span>,
     <span class="ident">models</span>::{<span class="ident">BlockType</span>, <span class="ident">NodeType</span>, <span class="ident">Transaction</span>},
-    <span class="ident">nodes</span>::{<span class="ident">ServerNodeTrait</span>, <span class="ident">ValidatorTrait</span>},
+    <span class="ident">nodes</span>::{<span class="ident">PrimaryValidator</span>, <span class="ident">RegularNode</span>, <span class="ident">ServerNodeTrait</span>, <span class="ident">ValidatorTrait</span>},
     <span class="ident">responses</span>::{
         <span class="ident">AccountBalanceLockResponse</span>, <span class="ident">AccountBalanceResponse</span>, <span class="ident">BlockResponse</span>, <span class="ident">ConfigResponse</span>,
     },
 };
-
-<span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::nodes</span>::{<span class="ident">PrimaryValidator</span>, <span class="ident">RegularNode</span>};
 
 <span class="kw">use</span> <span class="ident">anyhow</span>::{<span class="ident">bail</span>, <span class="prelude-ty">Result</span> <span class="kw">as</span> <span class="ident">AnyResult</span>};
 <span class="kw">use</span> <span class="ident">reqwest::Result</span>;

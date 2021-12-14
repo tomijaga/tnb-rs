@@ -1,4 +1,7 @@
-use crate::{account::Account, client::Client, models::Transaction, responses::BlockResponse};
+use crate::{
+    account::Account, client::Client, models::Transaction, nodes::RegularNode,
+    responses::BlockResponse,
+};
 
 use anyhow::Result as AnyResult;
 use reqwest::Result;
@@ -61,7 +64,9 @@ impl Wallet<'_> {
     ///     let recipient = "1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224";
     ///     let tx = Transaction::new(recipient, 1000);
     ///
-    ///     wallet.send_transaction(&tx);
+    ///     let block = wallet.send_transaction(&tx).unwrap();
+    ///
+    ///     println!("block response: {:?}", block);
     ///
     /// ```
     ///
@@ -98,7 +103,9 @@ impl Wallet<'_> {
     ///
     ///     let txs = vec![tx1, tx2, tx3];
     ///
-    ///     wallet.send_transactions(&txs);
+    ///     let block = wallet.send_transactions(&txs);
+    ///
+    ///     println!("block response: {:?}", block);
     ///
     /// ```
     ///
@@ -112,12 +119,12 @@ impl Wallet<'_> {
             .get_account_balance(&self.account.account_number())
     }
 
-    // /// Switch to a different node to process transaction
-    // pub fn switch_node<'a>(&'a mut self, node_url: &'a str) -> Result<()> {
-    //     self.client.node = RegularNode::new(node_url);
-    //     self.init();
-    //     Ok(())
-    // }
+    /// Switch to a different node to process transaction
+    pub fn switch_node<'a>(&'a mut self, node_url: &'a str) -> Result<()> {
+        self.client.node = RegularNode::new(node_url);
+        self.init();
+        Ok(())
+    }
 }
 
 #[test]
