@@ -30,7 +30,7 @@ impl RegularNode {
     ///
     /// ```
     ///     
-    /// use tnb_rs::{nodes::RegularNode};
+    /// use tnb_rs::{nodes::{RegularNode, ValidatorTrait, ServerNodeTrait}};
     ///
     /// let node_url = "https://bank.keysign.app";
     /// let node = RegularNode::new(node_url);
@@ -71,7 +71,7 @@ impl RegularNode {
     ///
     ///     use tnb_rs::{
     ///         models::{NodeType, TransactionQueryBuilder, PaginatedQueryTrait},
-    ///         nodes::RegularNode
+    ///         nodes::{RegularNode, ValidatorTrait, ServerNodeTrait}
     ///     };
     ///
     ///     let node = RegularNode::new("https://bank.keysign.app");

@@ -1,13 +1,7 @@
-use crate::account::Account;
-use crate::{
-    nodes::{
-        server_node::ServerNode,
-        traits::{ServerNodeTrait, ValidatorTrait},
-    },
-    responses::{AccountBalanceLockResponse, AccountBalanceResponse, ConfigResponse},
+use crate::nodes::{
+    server_node::ServerNode,
+    traits::{ServerNodeTrait, ValidatorTrait},
 };
-
-use reqwest::Result;
 
 /// Confirmation Validator
 #[derive(Debug)]
@@ -29,7 +23,7 @@ impl ConfirmationValidator {
     /// Create a new confirmation validator instance
     ///
     /// ```
-    ///     use tnb_rs::{nodes::ConfirmationValidator};
+    ///     use tnb_rs::{nodes::{ConfirmationValidator, ValidatorTrait, ServerNodeTrait}};
     ///
     ///     let cv = ConfirmationValidator::new("http://54.241.48.170");
     ///

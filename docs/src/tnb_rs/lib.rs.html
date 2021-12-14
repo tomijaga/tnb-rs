@@ -283,7 +283,8 @@
 <span class="doccomment">//!     let bank_url = &quot;https://bank.keysign.app&quot;;</span>
 <span class="doccomment">//!     let mut wallet = Wallet::new(&amp;acc, bank_url);</span>
 <span class="doccomment">//!     </span>
-<span class="doccomment">//!     // gets the details necessary to send a transaction</span>
+<span class="doccomment">//!     // This method retrieves the nodes transaction fee details</span>
+<span class="doccomment">//!     // It is important to call this method before sending a transaction</span>
 <span class="doccomment">//!     wallet.init();</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let recipient = &quot;1329d3a5d4a5ec2382dc539e03f30c3760e01932834a23522d3de0393b63f224&quot;;</span>
@@ -303,7 +304,7 @@
 <span class="doccomment">//! # Nodes</span>
 <span class="doccomment">//! - Connect directly to the network nodes</span>
 <span class="doccomment">//! ```</span>
-<span class="doccomment">//!     use tnb_rs::nodes::{RegularNode, PrimaryValidator, ConfirmationValidator};</span>
+<span class="doccomment">//!     use tnb_rs::nodes::{RegularNode, PrimaryValidator, ConfirmationValidator, ValidatorTrait, ServerNodeTrait};</span>
 <span class="doccomment">//!     </span>
 <span class="doccomment">//!     let cv = ConfirmationValidator::new(&quot;http://54.241.48.170&quot;);</span>
 <span class="doccomment">//!</span>
@@ -311,8 +312,7 @@
 <span class="doccomment">//!</span>
 <span class="doccomment">//!     let pv = PrimaryValidator::new(&quot;http://52.52.160.149&quot;);</span>
 <span class="doccomment">//!</span>
-<span class="doccomment">//!     // or</span>
-<span class="doccomment">//!</span>
+<span class="doccomment">//!     // or get the selected pv of a node</span>
 <span class="doccomment">//!     let pv: PrimaryValidator = node.get_pv().unwrap();</span>
 <span class="doccomment">//!</span>
 <span class="doccomment">//! ```</span>

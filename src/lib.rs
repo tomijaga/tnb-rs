@@ -130,7 +130,7 @@
 //! # Nodes
 //! - Connect directly to the network nodes
 //! ```
-//!     use tnb_rs::nodes::{RegularNode, PrimaryValidator, ConfirmationValidator};
+//!     use tnb_rs::nodes::{RegularNode, PrimaryValidator, ConfirmationValidator, ValidatorTrait, ServerNodeTrait};
 //!     
 //!     let cv = ConfirmationValidator::new("http://54.241.48.170");
 //!

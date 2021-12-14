@@ -6,7 +6,7 @@ use sodiumoxide::crypto::sign::ed25519::{
 };
 use std::{convert::TryInto, fmt};
 
-use crate::models::{BlockMessage, BlockType, ChainData, SignedMessage, Transaction};
+use crate::models::{BlockMessage, BlockType, ChainData, SignedMessage};
 
 fn convert_vec_to_fixed_array<T, const N: usize>(vec: Vec<T>) -> [T; N] {
     vec.try_into().unwrap_or_else(|v: Vec<T>| {

@@ -1,12 +1,7 @@
-use crate::{
-    nodes::{
-        server_node::ServerNode,
-        traits::{ServerNodeTrait, ValidatorTrait},
-    },
-    responses::{AccountBalanceLockResponse, AccountBalanceResponse, ConfigResponse},
+use crate::nodes::{
+    server_node::ServerNode,
+    traits::{ServerNodeTrait, ValidatorTrait},
 };
-
-use reqwest::Result;
 
 /// Primary Validator
 #[derive(Debug)]
@@ -28,7 +23,7 @@ impl PrimaryValidator {
     /// Create a new primary validator instance
     ///
     /// ```
-    ///     use tnb_rs::{nodes::PrimaryValidator};
+    ///     use tnb_rs::{nodes::{PrimaryValidator, ValidatorTrait, ServerNodeTrait}};
     ///
     ///     let pv = PrimaryValidator::new("http://52.52.160.149");
     ///
@@ -38,4 +33,12 @@ impl PrimaryValidator {
             base: ServerNode::new(url),
         }
     }
+}
+
+#[test]
+
+fn get_pv_config() {
+    let pv = PrimaryValidator::new("http://52.52.160.149");
+
+    println!("config: {:?}", pv.get_config().unwrap());
 }

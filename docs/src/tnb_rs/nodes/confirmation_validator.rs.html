@@ -34,22 +34,10 @@
 <span id="34">34</span>
 <span id="35">35</span>
 <span id="36">36</span>
-<span id="37">37</span>
-<span id="38">38</span>
-<span id="39">39</span>
-<span id="40">40</span>
-<span id="41">41</span>
-<span id="42">42</span>
-</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::account::Account</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::{
-    <span class="ident">nodes</span>::{
-        <span class="ident">server_node::ServerNode</span>,
-        <span class="ident">traits</span>::{<span class="ident">ServerNodeTrait</span>, <span class="ident">ValidatorTrait</span>},
-    },
-    <span class="ident">responses</span>::{<span class="ident">AccountBalanceLockResponse</span>, <span class="ident">AccountBalanceResponse</span>, <span class="ident">ConfigResponse</span>},
+</pre><pre class="rust"><code><span class="kw">use</span> <span class="ident"><span class="kw">crate</span>::nodes</span>::{
+    <span class="ident">server_node::ServerNode</span>,
+    <span class="ident">traits</span>::{<span class="ident">ServerNodeTrait</span>, <span class="ident">ValidatorTrait</span>},
 };
-
-<span class="kw">use</span> <span class="ident">reqwest::Result</span>;
 
 <span class="doccomment">/// Confirmation Validator</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>)]</span>
@@ -71,7 +59,7 @@
     <span class="doccomment">/// Create a new confirmation validator instance</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// ```</span>
-    <span class="doccomment">///     use tnb_rs::{nodes::ConfirmationValidator};</span>
+    <span class="doccomment">///     use tnb_rs::{nodes::{ConfirmationValidator, ValidatorTrait, ServerNodeTrait}};</span>
     <span class="doccomment">///</span>
     <span class="doccomment">///     let cv = ConfirmationValidator::new(&quot;http://54.241.48.170&quot;);</span>
     <span class="doccomment">///</span>
